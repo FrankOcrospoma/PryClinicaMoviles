@@ -4,15 +4,26 @@ from models.usuario import Usuario
 import os
 import json
 import validarToken as vt
+from github import Github
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
 # Define una ruta absoluta para UPLOAD_FOLDER
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # Obtiene el token de acceso personal desde las variables de entorno
+REPO_NAME = 'FrankOcrospoma/PryClinicaMoviles'  # Reemplaza con tu usuario y nombre de repositorio
+BRANCH_NAME = 'main'  # Reemplaza con la rama a la que quieres subir los archivos
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def upload_to_github(filename, filepath):
+    g = Github(GITHUB_TOKEN)
+    repo = g.get_repo(REPO_NAME)
+    with open(filepath, 'rb') as file:
+        content = file.read()
+    repo.create_file(f'img/{filename}', f'Subir archivo {filename}', content, branch=BRANCH_NAME)
 
 @ws_usuario.route('/usuario/agregar', methods=['POST'])
 # @vt.validar
@@ -120,7 +131,13 @@ def subir_foto():
         # Verificar si el archivo se guardó correctamente
         if os.path.exists(filepath):
             print(f"Archivo {filename} subido exitosamente")
-            return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+            try:
+                upload_to_github(filename, filepath)
+                print(f"Archivo {filename} subido a GitHub exitosamente")
+                return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+            except Exception as e:
+                print(f"Error al subir el archivo a GitHub: {str(e)}")
+                return jsonify({'status': False, 'data': None, 'message': 'Error al subir el archivo a GitHub'}), 500
         else:
             print(f"No se pudo guardar el archivo {filename}")
             return jsonify({'status': False, 'data': None, 'message': 'No se pudo guardar el archivo'}), 500
