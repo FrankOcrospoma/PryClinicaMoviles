@@ -100,9 +100,12 @@ def listar_usuarios():
 @vt.validar
 def subir_foto():
     if 'foto' not in request.files:
+        print("No se encontró el archivo")
         return jsonify({'status': False, 'data': None, 'message': 'No se encontró el archivo'}), 400
     file = request.files['foto']
+    print("Archivo recibido:", file.filename)
     if file.filename == '':
+        print("No se seleccionó ningún archivo")
         return jsonify({'status': False, 'data': None, 'message': 'No se seleccionó ningún archivo'}), 400
     if file and allowed_file(file.filename):
         if not os.path.exists(UPLOAD_FOLDER):
@@ -110,9 +113,12 @@ def subir_foto():
         filename = secure_filename(file.filename)
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
+        print("Archivo guardado en:", filepath)
         # Verificar si el archivo se guardó correctamente
         if os.path.exists(filepath):
             return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
         else:
+            print("No se pudo guardar el archivo")
             return jsonify({'status': False, 'data': None, 'message': 'No se pudo guardar el archivo'}), 500
+    print("Tipo de archivo no permitido")
     return jsonify({'status': False, 'data': None, 'message': 'Tipo de archivo no permitido'}), 400
