@@ -108,7 +108,11 @@ def subir_foto():
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
         filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
-        return jsonify({'status': True, 'data': {'filename': filename, 'filepath': file_path}, 'message': 'Archivo subido exitosamente'}), 200
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        # Verificar si el archivo se guardó correctamente
+        if os.path.exists(filepath):
+            return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+        else:
+            return jsonify({'status': False, 'data': None, 'message': 'No se pudo guardar el archivo'}), 500
     return jsonify({'status': False, 'data': None, 'message': 'Tipo de archivo no permitido'}), 400
