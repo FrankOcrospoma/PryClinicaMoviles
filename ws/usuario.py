@@ -122,9 +122,11 @@ def subir_foto():
         if os.path.exists(filepath):
             # Sincronizar con el repositorio de GitHub
             try:
-                subprocess.run(["git", "add", filepath], check=True)
-                subprocess.run(["git", "commit", "-m", f"Add {filename}"], check=True)
-                subprocess.run(["git", "push"], check=True)
+                # Cambia al directorio del repositorio
+                repo_dir = os.path.abspath(os.path.join(os.getcwd(), '..'))
+                subprocess.run(["git", "-C", repo_dir, "add", filepath], check=True)
+                subprocess.run(["git", "-C", repo_dir, "commit", "-m", f"Add {filename}"], check=True)
+                subprocess.run(["git", "-C", repo_dir, "push"], check=True)
                 print("Archivo subido y sincronizado con GitHub")
                 return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente y sincronizado con GitHub'}), 200
             except subprocess.CalledProcessError as e:
