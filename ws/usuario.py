@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from models.usuario import Usuario
 import os
@@ -11,9 +11,9 @@ ws_usuario = Blueprint('ws_usuario', __name__)
 # Define una ruta absoluta para UPLOAD_FOLDER
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # Obtiene el token de acceso personal desde las variables de entorno
-REPO_NAME = 'FrankOcrospoma/PryClinicaMoviles'  # Reemplaza con tu usuario y nombre de repositorio
-BRANCH_NAME = 'main'  # Reemplaza con la rama a la que quieres subir los archivos
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+REPO_NAME = 'FrankOcrospoma/PryClinicaMoviles'
+BRANCH_NAME = 'main'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -26,7 +26,6 @@ def upload_to_github(filename, filepath):
     repo.create_file(f'img/{filename}', f'Subir archivo {filename}', content, branch=BRANCH_NAME)
 
 @ws_usuario.route('/usuario/agregar', methods=['POST'])
-# @vt.validar
 def agregar_usuario():
     if request.method == 'POST':
         required_params = ['nombreUsuario', 'email', 'contrasena', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono', 'foto', 'rolId']
@@ -59,7 +58,7 @@ def agregar_usuario():
 @vt.validar
 def actualizar_usuario():
     if request.method == 'PUT':
-        required_params = ['id', 'nombreUsuario', 'email', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id','sexo', 'direccion', 'telefono', 'foto', 'rolId']
+        required_params = ['id', 'nombreUsuario', 'email', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono', 'foto', 'rolId']
         if not all(param in request.form for param in required_params):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
         id_usuario = request.form['id']
@@ -143,3 +142,7 @@ def subir_foto():
             return jsonify({'status': False, 'data': None, 'message': 'No se pudo guardar el archivo'}), 500
     print("Tipo de archivo no permitido")
     return jsonify({'status': False, 'data': None, 'message': 'Tipo de archivo no permitido'}), 400
+
+@ws_usuario.route('/img/<filename>', methods=['GET'])
+def get_image(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
