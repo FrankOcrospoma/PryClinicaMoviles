@@ -7,7 +7,7 @@ import validarToken as vt
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
-UPLOAD_FOLDER = '/img/'  # Asegúrate de cambiar esta ruta a donde quieras guardar las fotos
+UPLOAD_FOLDER = '../img/'  # Asegúrate de cambiar esta ruta a donde quieras guardar las fotos
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
