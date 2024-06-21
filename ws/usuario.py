@@ -11,6 +11,9 @@ ws_usuario = Blueprint('ws_usuario', __name__)
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')  # Asegúrate de que esta ruta existe en tu sistema de archivos
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -108,6 +111,10 @@ def subir_foto():
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
         filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        if os.path.exists(filepath):
+            return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+        else:
+            return jsonify({'status': False, 'data': None, 'message': 'Error al guardar el archivo'}), 500
     return jsonify({'status': False, 'data': None, 'message': 'Tipo de archivo no permitido'}), 400
