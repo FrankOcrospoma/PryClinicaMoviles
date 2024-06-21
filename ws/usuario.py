@@ -4,12 +4,16 @@ from models.usuario import Usuario
 import os
 import json
 import validarToken as vt
+import subprocess
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
 # Define una ruta absoluta para UPLOAD_FOLDER
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -116,7 +120,16 @@ def subir_foto():
         print("Archivo guardado en:", filepath)
         # Verificar si el archivo se guardó correctamente
         if os.path.exists(filepath):
-            return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+            # Sincronizar con el repositorio de GitHub
+            try:
+                subprocess.run(["git", "add", filepath], check=True)
+                subprocess.run(["git", "commit", "-m", f"Add {filename}"], check=True)
+                subprocess.run(["git", "push"], check=True)
+                print("Archivo subido y sincronizado con GitHub")
+                return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente y sincronizado con GitHub'}), 200
+            except subprocess.CalledProcessError as e:
+                print("Error al sincronizar con GitHub:", e)
+                return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente pero no se pudo sincronizar con GitHub'}), 200
         else:
             print("No se pudo guardar el archivo")
             return jsonify({'status': False, 'data': None, 'message': 'No se pudo guardar el archivo'}), 500
