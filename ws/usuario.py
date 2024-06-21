@@ -7,7 +7,8 @@ import validarToken as vt
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
-UPLOAD_FOLDER = '/../img/'  # Asegúrate de cambiar esta ruta a donde quieras guardar las fotos
+# Define una ruta absoluta para UPLOAD_FOLDER
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')  # Asegúrate de que esta ruta existe en tu sistema de archivos
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
@@ -104,6 +105,8 @@ def subir_foto():
     if file.filename == '':
         return jsonify({'status': False, 'data': None, 'message': 'No se seleccionó ningún archivo'}), 400
     if file and allowed_file(file.filename):
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
         filename = secure_filename(file.filename)
         file.save(os.path.join(UPLOAD_FOLDER, filename))
         return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
