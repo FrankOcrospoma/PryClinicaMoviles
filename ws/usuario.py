@@ -8,7 +8,7 @@ import validarToken as vt
 ws_usuario = Blueprint('ws_usuario', __name__)
 
 # Define una ruta absoluta para UPLOAD_FOLDER
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')  # Asegúrate de que esta ruta existe en tu sistema de archivos
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
