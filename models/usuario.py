@@ -45,13 +45,13 @@ class Usuario():
     def actualizar(self):
         con = db().open
         cursor = con.cursor()
-        sql = "UPDATE usuario SET nombre_usuario = %s, email = %s, contrasena = %s, estado = %s, token = %s, estado_token = %s, nombre = %s, ape_completo = %s, fecha_nac = %s, documento = %s, sexo = %s, direccion = %s, telefono = %s, foto = %s, rol_id = %s WHERE id = %s"
+        sql = "UPDATE usuario SET nombre_usuario = %s, email = %s,  estado = %s, token = %s, estado_token = %s, nombre = %s, ape_completo = %s, fecha_nac = %s, documento = %s, sexo = %s, direccion = %s, telefono = %s, foto = %s, rol_id = %s WHERE id = %s"
         try:
             con.autocommit = False
             direccion = self.direccion if self.direccion is not None else ""
             telefono = self.telefono if self.telefono is not None else ""
             foto = self.foto if self.foto is not None else ""
-            cursor.execute(sql, [self.nombreUsuario, self.email, self.contrasena, self.estado, self.token, self.estadoToken, self.nombre, self.apeCompleto, self.fechaNac, self.documento, self.sexo, direccion, telefono, foto, self.rolId, self.id])
+            cursor.execute(sql, [self.nombreUsuario, self.email, self.estado, self.token, self.estadoToken, self.nombre, self.apeCompleto, self.fechaNac, self.documento, self.sexo, direccion, telefono, foto, self.rolId, self.id])
             con.commit()
         except con.Error as error:
             con.rollback()

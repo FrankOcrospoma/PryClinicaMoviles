@@ -39,13 +39,13 @@ def agregar_usuario():
 @vt.validar
 def actualizar_usuario():
     if request.method == 'PUT':
-        required_params = ['id', 'nombreUsuario', 'email', 'contrasena', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id','sexo', 'direccion', 'telefono', 'foto', 'rolId']
+        required_params = ['id', 'nombreUsuario', 'email', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id','sexo', 'direccion', 'telefono', 'foto', 'rolId']
         if not all(param in request.form for param in required_params):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
         id_usuario = request.form['id']
         nombre_usuario = request.form['nombreUsuario']
         email = request.form['email']
-        contrasena = request.form['contrasena']
+
         estado = request.form['estado']
         token = request.form['token']
         estado_token = request.form['estadoToken']
@@ -59,7 +59,7 @@ def actualizar_usuario():
         telefono = request.form.get('telefono', '')
         foto = request.form.get('foto', '')
         rol_id = request.form['rolId']
-        obj = Usuario(id_usuario, nombre_usuario, email, contrasena, estado, token, estado_token, nombre, ape_completo, fecha_nac, documento, tipo_documento_id, sexo, direccion, telefono, foto, rol_id)
+        obj = Usuario(id_usuario, nombre_usuario, email, None, estado, token, estado_token, nombre, ape_completo, fecha_nac, documento, tipo_documento_id, sexo, direccion, telefono, foto, rol_id)
         resultado_actualizar = json.loads(obj.actualizar())
         if resultado_actualizar['status']:
             return jsonify(resultado_actualizar), 200
