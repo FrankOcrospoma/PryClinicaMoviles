@@ -1,9 +1,17 @@
 from flask import Blueprint, request, jsonify
+from werkzeug.utils import secure_filename
 from models.usuario import Usuario
+import os
 import json
 import validarToken as vt
 
 ws_usuario = Blueprint('ws_usuario', __name__)
+
+UPLOAD_FOLDER = 'ruta/donde/guardar/las/fotos'  # Asegúrate de cambiar esta ruta a donde quieras guardar las fotos
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @ws_usuario.route('/usuario/agregar', methods=['POST'])
 # @vt.validar
@@ -86,3 +94,17 @@ def listar_usuarios():
     if request.method == 'GET':
         obj = Usuario()
         return jsonify(json.loads(obj.listar_usuarios())), 200
+
+@ws_usuario.route('/usuario/subirFoto', methods=['POST'])
+@vt.validar
+def subir_foto():
+    if 'foto' not in request.files:
+        return jsonify({'status': False, 'data': None, 'message': 'No se encontró el archivo'}), 400
+    file = request.files['foto']
+    if file.filename == '':
+        return jsonify({'status': False, 'data': None, 'message': 'No se seleccionó ningún archivo'}), 400
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+    return jsonify({'status': False, 'data': None, 'message': 'Tipo de archivo no permitido'}), 400
