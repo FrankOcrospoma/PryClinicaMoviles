@@ -99,28 +99,26 @@ def listar_usuarios():
 @ws_usuario.route('/usuario/subirFoto', methods=['POST'])
 @vt.validar
 def subir_foto():
-    print("Inicio del proceso de subida de foto")  # Registro adicional
     if 'foto' not in request.files:
-        print("No se encontró el archivo 'foto' en la solicitud")  # Registro adicional
+        print("No se encontró el archivo")
         return jsonify({'status': False, 'data': None, 'message': 'No se encontró el archivo'}), 400
     file = request.files['foto']
+    print("Archivo recibido:", file.filename)
     if file.filename == '':
-        print("No se seleccionó ningún archivo")  # Registro adicional
+        print("No se seleccionó ningún archivo")
         return jsonify({'status': False, 'data': None, 'message': 'No se seleccionó ningún archivo'}), 400
     if file and allowed_file(file.filename):
         if not os.path.exists(UPLOAD_FOLDER):
-            print(f"Carpeta {UPLOAD_FOLDER} no existe. Creando carpeta...")  # Registro adicional
             os.makedirs(UPLOAD_FOLDER)
         filename = secure_filename(file.filename)
         filepath = os.path.join(UPLOAD_FOLDER, filename)
-        print(f"Guardando archivo en {filepath}")  # Registro adicional
         file.save(filepath)
+        print("Archivo guardado en:", filepath)
         # Verificar si el archivo se guardó correctamente
         if os.path.exists(filepath):
-            print(f"Archivo guardado correctamente en {filepath}")  # Registro adicional
             return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
         else:
-            print("No se pudo guardar el archivo")  # Registro adicional
+            print("No se pudo guardar el archivo")
             return jsonify({'status': False, 'data': None, 'message': 'No se pudo guardar el archivo'}), 500
-    print("Tipo de archivo no permitido")  # Registro adicional
+    print("Tipo de archivo no permitido")
     return jsonify({'status': False, 'data': None, 'message': 'Tipo de archivo no permitido'}), 400
