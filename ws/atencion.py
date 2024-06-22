@@ -114,3 +114,109 @@ def eliminar_atencion():
             return jsonify(resultadoEliminarJSONObject), 200  # OK
         else:
             return jsonify(resultadoEliminarJSONObject), 500  # Internal Server Error
+
+
+#APIS para paciente
+
+@ws_atencion.route('/atencion/cita/registrar', methods=['POST'])
+#@vt.validar
+def registrar_cita():
+    if request.method == 'POST':
+        required_fields = ['paciente_id', 'odontologo_id', 'fecha', 'hora', 'motivo_consulta']
+        if not all(field in request.form for field in required_fields):
+            return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
+
+        paciente_id = request.form['paciente_id']
+        odontologo_id = request.form['odontologo_id']
+        fecha = request.form['fecha']
+        hora = request.form['hora']
+        motivo_consulta = request.form['motivo_consulta']
+        diagnostico = None
+        anotacion = None
+        costo = None
+        estado = 'P'
+
+        obj = Atencion(0,paciente_id, odontologo_id, fecha, hora, motivo_consulta, diagnostico, anotacion, costo, estado)
+        
+        resultadoAgregarJSONObject = json.loads(obj.registrar_cita_atencion_por_paciente())
+        
+        if resultadoAgregarJSONObject['status'] == True:
+            return jsonify(resultadoAgregarJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
+        
+
+@ws_atencion.route('/atencion/citas-paciente/<int:paciente_id>', methods=['GET'])
+#@vt.validar
+def obtener_citas_paciente(paciente_id):
+    if request.method == 'GET': 
+        if not paciente_id:
+            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400  # Bad Request
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtener_citas_por_paciente(paciente_id))
+
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content
+
+
+@ws_atencion.route('/atencion/cita/cancelar', methods=['POST'])
+#@vt.validar
+def cancelar_cita():
+    if request.method == 'POST':
+        required_fields = ['cita_id']
+        if not all(field in request.form for field in required_fields):
+            return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
+
+        cita_id = request.form['cita_id']
+        paciente_id = None
+        odontologo_id = None
+        fecha = None
+        hora = None
+        motivo_consulta = None
+        diagnostico = None
+        anotacion = None
+        costo = None
+        estado = None
+
+        obj = Atencion(cita_id, paciente_id, odontologo_id, fecha, hora, motivo_consulta, diagnostico, anotacion, costo, estado)
+        
+
+        resultadoAgregarJSONObject = json.loads(obj.cancelar_cita_atencion_por_paciente())
+        
+        if resultadoAgregarJSONObject['status'] == True:
+            return jsonify(resultadoAgregarJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
+        
+@ws_atencion.route('/atencion/cita/reprogramar', methods=['POST'])
+#@vt.validar
+def reprogramar_cita():
+    if request.method == 'POST':
+        required_fields = ['cita_id', 'fecha', 'hora']
+        if not all(field in request.form for field in required_fields):
+            return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
+
+        cita_id = request.form['cita_id']
+        paciente_id = None
+        odontologo_id = None
+        fecha = request.form['fecha']
+        hora = request.form['hora']
+        motivo_consulta = None
+        diagnostico = None
+        anotacion = None
+        costo = None
+        estado = None
+
+        obj = Atencion(cita_id, paciente_id, odontologo_id, fecha, hora, motivo_consulta, diagnostico, anotacion, costo, estado)
+        
+
+        resultadoAgregarJSONObject = json.loads(obj.reprogramar_cita_atencion_por_paciente())
+        
+        if resultadoAgregarJSONObject['status'] == True:
+            return jsonify(resultadoAgregarJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error

@@ -18,12 +18,12 @@ class Atencion():
         self.estado = estado
         
     def Lista_Atencion(self):
-       con = db().open
-       
-       cursor = con.cursor() 
-       
-       sql = """
-       SELECT 
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        sql = """
+        SELECT 
             a.id AS atencion_id,
             CONCAT(p.nombre, ' ', p.ape_completo) AS nombre_paciente,
             CONCAT(o.nombre, ' ', o.ape_completo) AS nombre_odontologo,
@@ -44,36 +44,36 @@ class Atencion():
         INNER JOIN usuario p ON a.paciente_id = p.id
         INNER JOIN usuario o ON a.odontologo_id = o.id
         ORDER BY a.fecha, a.hora;
-       """
-       
-       cursor.execute(sql)
-       #Recuperar los datos de la consulta SQL
-       datos = cursor.fetchall()
-       
-       #Cerrar el cursor y la conexion
-       cursor.close()
-       con.close()
-       datos_modificados = []
-       for fila in datos:
+        """
+        
+        cursor.execute(sql)
+        #Recuperar los datos de la consulta SQL
+        datos = cursor.fetchall()
+        
+        #Cerrar el cursor y la conexion
+        cursor.close()
+        con.close()
+        datos_modificados = []
+        for fila in datos:
             hora = fila['hora']  # Esto asume que 'hora' es un timedelta
             formatted_time = f"{hora.seconds // 3600:02}:{(hora.seconds % 3600) // 60:02}:{hora.seconds % 60:02}"
             fila_modificada = fila.copy()
             fila_modificada['hora'] = formatted_time
             datos_modificados.append(fila_modificada)
 
-       print(datos_modificados)
+        print(datos_modificados)
 
-       if datos_modificados:
+        if datos_modificados:
             return json.dumps({'status': True, 'data': datos_modificados, 'message': 'Lista de atencion'}, cls=CustomJsonEncoder)
-       else:
+        else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
 
     def Lista_Atencion_PorEstado(self, estado):
-       con = db().open
-       
-       cursor = con.cursor() 
-       
-       sql = """
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        sql = """
         SELECT 
             a.id AS atencion_id,
             CONCAT(p.nombre, ' ', p.ape_completo) AS nombre_paciente,
@@ -96,144 +96,290 @@ class Atencion():
         INNER JOIN usuario o ON a.odontologo_id = o.id
         WHERE a.estado = %s
         ORDER BY a.fecha, a.hora;
-       """
-       cursor.execute(sql, [estado])
-       #Recuperar los datos de la consulta SQL
-       datos = cursor.fetchall()
-       
-       #Cerrar el cursor y la conexion
-       cursor.close()
-       con.close()
-       
-       datos_modificados = []
-       for fila in datos:
+        """
+        cursor.execute(sql, [estado])
+        #Recuperar los datos de la consulta SQL
+        datos = cursor.fetchall()
+        
+        #Cerrar el cursor y la conexion
+        cursor.close()
+        con.close()
+        
+        datos_modificados = []
+        for fila in datos:
             hora = fila['hora']  # Esto asume que 'hora' es un timedelta
             formatted_time = f"{hora.seconds // 3600:02}:{(hora.seconds % 3600) // 60:02}:{hora.seconds % 60:02}"
             fila_modificada = fila.copy()
             fila_modificada['hora'] = formatted_time
             datos_modificados.append(fila_modificada)
 
-       print(datos_modificados)
+        print(datos_modificados)
 
-       if datos_modificados:
+        if datos_modificados:
             return json.dumps({'status': True, 'data': datos_modificados, 'message': 'Lista de atencion'}, cls=CustomJsonEncoder)
-       else:
+        else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
-       
+        
     def registrar(self):
-     #Abrir la conexion
-     con = db().open
-     
-     #Crear un cursor que devuelve la consulta sql
-     cursor = con.cursor()
-     
-     #Prepar la sentencia de actualziacion
-     sql = """
-     INSERT INTO atencion(
-          paciente_id, 
-          odontologo_id, 
-          fecha, 
-          hora, 
-          motivo_consulta, 
-          diagnostico, 
-          anotacion, 
-          costo, 
-          estado
-     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
-     """
-     
-     try:
-          #Iniciar la actualizacion, indicando que la operacion (Transaccion)
-          #Se confirma de manera manual
-          con.autocommit = False
-          #Ejecutar la sentencia
-          cursor.execute(sql, [self.paciente_id, self.odontologo_id, self.fecha,self.hora, self.motivo_consulta, self.diagnostico,self.anotacion, self.costo, self.estado])
-          self.id = con.insert_id()  
+        #Abrir la conexion
+        con = db().open
+        
+        #Crear un cursor que devuelve la consulta sql
+        cursor = con.cursor()
+        
+        #Prepar la sentencia de actualziacion
+        sql = """
+        INSERT INTO atencion(
+            paciente_id, 
+            odontologo_id, 
+            fecha, 
+            hora, 
+            motivo_consulta, 
+            diagnostico, 
+            anotacion, 
+            costo, 
+            estado
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        
+        try:
+            #Iniciar la actualizacion, indicando que la operacion (Transaccion)
+            #Se confirma de manera manual
+            con.autocommit = False
+            #Ejecutar la sentencia
+            cursor.execute(sql, [self.paciente_id, self.odontologo_id, self.fecha,self.hora, self.motivo_consulta, self.diagnostico,self.anotacion, self.costo, self.estado])
+            self.id = con.insert_id()  
 
-          #Confirmar la operacion de agregar
-          con.commit()
-          
-     except con.Error as error:  
-          #Revocar la operacion de agregar
-          con.rollback()
-          
-          return json.dumps({'status': False, 'data': None, 'message': str(error)})
+            #Confirmar la operacion de agregar
+            con.commit()
+            
+        except con.Error as error:  
+            #Revocar la operacion de agregar
+            con.rollback()
+            
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
 
-     finally:
-          cursor.close()
-          con.close()
-          
-     return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atencion registrada correctamente'})
+        finally:
+            cursor.close()
+            con.close()
+            
+        return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atencion registrada correctamente'})
 
     def actualizar_atencion(self):
-          # Abrir la conexión
-          con = db().open
-          
-          # Crear un cursor para ejecutar la consulta SQL
-          cursor = con.cursor()
-          
-          # Preparar la sentencia de actualización
-          sql = """UPDATE atencion SET paciente_id = %s, odontologo_id = %s, fecha = %s, 
+            # Abrir la conexión
+            con = db().open
+            
+            # Crear un cursor para ejecutar la consulta SQL
+            cursor = con.cursor()
+            
+            # Preparar la sentencia de actualización
+            sql = """UPDATE atencion SET paciente_id = %s, odontologo_id = %s, fecha = %s, 
                     hora = %s, motivo_consulta = %s, diagnostico = %s, anotacion = %s, 
                     costo = %s, estado = %s WHERE id = %s"""
-          
-          try:
-               # Iniciar la actualización, indicando que la operación (Transacción)
-               # se confirma de manera manual
-               con.autocommit = False
-               
-               # Ejecutar la sentencia
-               cursor.execute(sql, [self.paciente_id, self.odontologo_id, self.fecha, self.hora,
-                                   self.motivo_consulta, self.diagnostico, self.anotacion,
-                                   self.costo, self.estado, self.id])
-               
-               # Confirmar la operación de actualizar
-               con.commit()
-               
-          except con.Error as error:
-               # Revocar la operación de agregar
-               con.rollback()
-               
-               return json.dumps({'status': False, 'data': None, 'message': str(error)})
-          
-          finally:
-               # Cerrar el cursor y la conexión
-               cursor.close()
-               con.close()
-               
-          return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atención actualizada correctamente'})
-     
+            
+            try:
+                # Iniciar la actualización, indicando que la operación (Transacción)
+                # se confirma de manera manual
+                con.autocommit = False
+                
+                # Ejecutar la sentencia
+                cursor.execute(sql, [self.paciente_id, self.odontologo_id, self.fecha, self.hora,
+                                    self.motivo_consulta, self.diagnostico, self.anotacion,
+                                    self.costo, self.estado, self.id])
+                
+                # Confirmar la operación de actualizar
+                con.commit()
+                
+            except con.Error as error:
+                # Revocar la operación de agregar
+                con.rollback()
+                
+                return json.dumps({'status': False, 'data': None, 'message': str(error)})
+            
+            finally:
+                # Cerrar el cursor y la conexión
+                cursor.close()
+                con.close()
+                
+            return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atención actualizada correctamente'})
+        
     def eliminar_atencion(self):
-          # Abrir la conexión
-          con = db().open
-          
-          # Crear un cursor que ejecuta la consulta SQL
-          cursor = con.cursor()
-          
-          # Preparar la sentencia de eliminación
-          sql = "DELETE FROM atencion WHERE id = %s"
-          
-          try:
-               # Iniciar la operación, indicando que la transacción
-               # se confirma de manera manual
-               con.autocommit = False
-               
-               # Ejecutar la sentencia
-               cursor.execute(sql, [self.id])
+        # Abrir la conexión
+        con = db().open
+        
+        # Crear un cursor que ejecuta la consulta SQL
+        cursor = con.cursor()
+        
+        # Preparar la sentencia de eliminación
+        sql = "DELETE FROM atencion WHERE id = %s"
+        
+        try:
+                # Iniciar la operación, indicando que la transacción
+                # se confirma de manera manual
+                con.autocommit = False
+                
+                # Ejecutar la sentencia
+                cursor.execute(sql, [self.id])
 
-               # Confirmar la operación
-               con.commit()
-               
-          except con.Error as error:
-               # Revocar la operación en caso de error
-               con.rollback()
-               
-               return json.dumps({'status': False, 'data': None, 'message': str(error)})
+                # Confirmar la operación
+                con.commit()
+                
+        except con.Error as error:
+                # Revocar la operación en caso de error
+                con.rollback()
+                
+                return json.dumps({'status': False, 'data': None, 'message': str(error)})
 
-          finally:
-               # Cerrar el cursor y la conexión
-               cursor.close()
-               con.close()
-               
-          return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atención eliminada correctamente'})
+        finally:
+                # Cerrar el cursor y la conexión
+                cursor.close()
+                con.close()
+                
+        return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atención eliminada correctamente'})
 
+
+    #APIS para paciente
+
+    def registrar_cita_atencion_por_paciente(self):
+        con = db().open
+        
+        cursor = con.cursor()
+        
+        sql = """
+        INSERT INTO cita_atencion(
+                paciente_id, 
+                odontologo_id, 
+                fecha, 
+                hora, 
+                motivo_consulta,
+                estado
+        ) VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        
+        try:
+            con.autocommit = False
+            cursor.execute(sql, [self.paciente_id, self.odontologo_id, self.fecha, self.hora, self.motivo_consulta, self.estado])
+            self.id = con.insert_id()  
+            con.commit()
+                
+        except con.Error as error:
+            con.rollback()
+            
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+                
+        return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Cita registrada correctamente'})
+    
+
+    def obtener_citas_por_paciente(self, paciente_id):
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        sql = """
+        SELECT 
+            a.id AS cita_id,
+            CONCAT(p.nombre, ' ', p.ape_completo) AS nombre_paciente,
+            CONCAT(o.nombre, ' ', o.ape_completo) AS nombre_odontologo,
+            a.fecha,
+            a.hora,
+            a.motivo_consulta,
+            a.diagnostico,
+            a.anotacion,
+            a.costo,
+            CASE a.estado 
+                WHEN 'R' THEN 'REALIZADA'
+                WHEN 'C' THEN 'CANCELADA'
+                WHEN 'A' THEN 'APLAZADA'
+                WHEN 'P' THEN 'PROGRAMADA'
+                ELSE 'Estado desconocido'
+            END AS estado
+        FROM cita_atencion a
+        INNER JOIN usuario p ON a.paciente_id = p.id
+        INNER JOIN usuario o ON a.odontologo_id = o.id
+        WHERE a.paciente_id=%s AND a.estado='P' or a.estado='A'
+        ORDER BY a.fecha, a.hora;
+        """
+        
+        cursor.execute(sql, paciente_id)
+        datos = cursor.fetchall()
+        
+        cursor.close()
+        con.close()
+        datos_modificados = []
+        for fila in datos:
+            hora = fila['hora']
+            formatted_time = f"{hora.seconds // 3600:02}:{(hora.seconds % 3600) // 60:02}:{hora.seconds % 60:02}"
+            fila_modificada = fila.copy()
+            fila_modificada['hora'] = formatted_time
+            datos_modificados.append(fila_modificada)
+
+        if datos_modificados:
+            return json.dumps({'status': True, 'data': datos_modificados, 'message': 'Lista de citas programadas'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+        
+
+    def cancelar_cita_atencion_por_paciente(self):
+        con = db().open
+        
+        cursor = con.cursor()
+        
+        sql = """
+        UPDATE cita_atencion
+        SET 
+            estado = 'C'
+        WHERE id = %s;
+        """
+        
+        try:
+            con.autocommit = False
+            cursor.execute(sql, [self.id])
+            con.commit()
+                
+        except con.Error as error:
+            con.rollback()
+            
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+                
+        return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Cita cancelada correctamente'})
+    
+
+
+    def reprogramar_cita_atencion_por_paciente(self):
+        con = db().open
+        
+        cursor = con.cursor()
+        
+        sql = """
+        UPDATE cita_atencion
+        SET 
+            fecha = %s,
+            hora = %s,
+            estado = 'A'
+        WHERE id = %s;
+        """
+        
+        try:
+            con.autocommit = False
+            cursor.execute(sql, [self.fecha, self.hora, self.id])
+            con.commit()
+                
+        except con.Error as error:
+            con.rollback()
+            
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+                
+        return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Cita aplazada correctamente'})
+    
