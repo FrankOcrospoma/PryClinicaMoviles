@@ -125,8 +125,16 @@ def subir_foto():
             print(f"Carpeta {UPLOAD_FOLDER} ya existe")
         filename = secure_filename(file.filename)
         filepath = os.path.join(UPLOAD_FOLDER, filename)
+        
+        # Verificar si el archivo ya existe
+        if os.path.exists(filepath):
+            print(f"Archivo {filename} ya existe, utilizando el existente")
+            return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo ya existente utilizado'}), 200
+        
+        # Guardar el archivo si no existe
         file.save(filepath)
         print(f"Archivo guardado en {filepath}")
+        
         # Verificar si el archivo se guardó correctamente
         if os.path.exists(filepath):
             print(f"Archivo {filename} subido exitosamente")
