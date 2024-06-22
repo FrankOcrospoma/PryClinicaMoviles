@@ -1,25 +1,31 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from models.usuario import Usuario
 import os
 import json
 import validarToken as vt
-import subprocess
+from github import Github
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
 # Define una ruta absoluta para UPLOAD_FOLDER
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'img')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+REPO_NAME = 'FrankOcrospoma/PryClinicaMoviles'
+BRANCH_NAME = 'main'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def upload_to_github(filename, filepath):
+    g = Github(GITHUB_TOKEN)
+    repo = g.get_repo(REPO_NAME)
+    with open(filepath, 'rb') as file:
+        content = file.read()
+    repo.create_file(f'img/{filename}', f'Subir archivo {filename}', content, branch=BRANCH_NAME)
+
 @ws_usuario.route('/usuario/agregar', methods=['POST'])
-# @vt.validar
 def agregar_usuario():
     if request.method == 'POST':
         required_params = ['nombreUsuario', 'email', 'contrasena', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono', 'foto', 'rolId']
@@ -52,7 +58,7 @@ def agregar_usuario():
 @vt.validar
 def actualizar_usuario():
     if request.method == 'PUT':
-        required_params = ['id', 'nombreUsuario', 'email', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id','sexo', 'direccion', 'telefono', 'foto', 'rolId']
+        required_params = ['id', 'nombreUsuario', 'email', 'estado', 'token', 'estadoToken', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono', 'foto', 'rolId']
         if not all(param in request.form for param in required_params):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
         id_usuario = request.form['id']
@@ -103,35 +109,40 @@ def listar_usuarios():
 @ws_usuario.route('/usuario/subirFoto', methods=['POST'])
 @vt.validar
 def subir_foto():
+    print("Inicio de subir_foto")
     if 'foto' not in request.files:
-        print("No se encontró el archivo")
+        print("No se encontró el archivo 'foto' en la solicitud")
         return jsonify({'status': False, 'data': None, 'message': 'No se encontró el archivo'}), 400
     file = request.files['foto']
-    print("Archivo recibido:", file.filename)
     if file.filename == '':
         print("No se seleccionó ningún archivo")
         return jsonify({'status': False, 'data': None, 'message': 'No se seleccionó ningún archivo'}), 400
     if file and allowed_file(file.filename):
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
+            print(f"Carpeta {UPLOAD_FOLDER} creada")
+        else:
+            print(f"Carpeta {UPLOAD_FOLDER} ya existe")
         filename = secure_filename(file.filename)
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
-        print("Archivo guardado en:", filepath)
+        print(f"Archivo guardado en {filepath}")
         # Verificar si el archivo se guardó correctamente
         if os.path.exists(filepath):
-            # Sincronizar con el repositorio de GitHub
+            print(f"Archivo {filename} subido exitosamente")
             try:
-                subprocess.run(["git", "add", filepath], check=True)
-                subprocess.run(["git", "commit", "-m", f"Add {filename}"], check=True)
-                subprocess.run(["git", "push"], check=True)
-                print("Archivo subido y sincronizado con GitHub")
-                return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente y sincronizado con GitHub'}), 200
-            except subprocess.CalledProcessError as e:
-                print("Error al sincronizar con GitHub:", e)
-                return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente pero no se pudo sincronizar con GitHub'}), 200
+                upload_to_github(filename, filepath)
+                print(f"Archivo {filename} subido a GitHub exitosamente")
+                return jsonify({'status': True, 'data': {'filename': filename}, 'message': 'Archivo subido exitosamente'}), 200
+            except Exception as e:
+                print(f"Error al subir el archivo a GitHub: {str(e)}")
+                return jsonify({'status': False, 'data': None, 'message': 'Error al subir el archivo a GitHub'}), 500
         else:
-            print("No se pudo guardar el archivo")
+            print(f"No se pudo guardar el archivo {filename}")
             return jsonify({'status': False, 'data': None, 'message': 'No se pudo guardar el archivo'}), 500
     print("Tipo de archivo no permitido")
     return jsonify({'status': False, 'data': None, 'message': 'Tipo de archivo no permitido'}), 400
+
+@ws_usuario.route('/img/<filename>', methods=['GET'])
+def get_image(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
