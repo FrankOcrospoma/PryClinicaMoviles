@@ -154,3 +154,22 @@ def subir_foto():
 @ws_usuario.route('/img/<filename>', methods=['GET'])
 def get_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+@ws_usuario.route('/usuario/cambiarContrasena', methods=['POST'])
+@vt.validar
+def cambiar_contrasena():
+    if request.method == 'POST':
+        required_params = ['id', 'nuevaContrasena']
+        if not all(param in request.form for param in required_params):
+            return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
+        
+        id_usuario = request.form['id']
+        nueva_contrasena = request.form['nuevaContrasena']
+        
+        obj = Usuario(id_usuario)
+        resultado_cambiar = json.loads(obj.cambiar_contrasena(nueva_contrasena))
+        if resultado_cambiar['status']:
+            return jsonify(resultado_cambiar), 200
+        else:
+            return jsonify(resultado_cambiar), 500
