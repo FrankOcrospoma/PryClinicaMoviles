@@ -5,6 +5,9 @@ import os
 import json
 import validarToken as vt
 from github import Github
+import random
+import smtplib
+from email.mime.text import MIMEText
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
