@@ -173,3 +173,63 @@ def cambiar_contrasena():
             return jsonify(resultado_cambiar), 200
         else:
             return jsonify(resultado_cambiar), 500
+        
+        @ws_usuario.route('/usuario/enviarCodigoRecuperacion', methods=['POST'])
+def enviar_codigo_recuperacion():
+    email = request.form.get('email')
+    if not email:
+        return jsonify({'status': False, 'message': 'Falta el correo electrónico'}), 400
+
+    usuario = Usuario.buscar_por_email(email)
+    if not usuario:
+        return jsonify({'status': False, 'message': 'Correo electrónico no encontrado'}), 404
+
+    codigo = ''.join(random.choices('0123456789', k=6))
+
+    # Aquí debes guardar el código en la base de datos asociado al usuario
+    usuario.guardar_codigo_recuperacion(codigo)
+
+    # Enviar el código por correo electrónico
+    try:
+        msg = MIMEText(f'Tu código de verificación es: {codigo}')
+        msg['Subject'] = 'Recuperación de contraseña'
+        msg['From'] = 'tu_correo@example.com'
+        msg['To'] = email
+
+        with smtplib.SMTP('smtp.example.com') as server:
+            server.login('tu_correo@example.com', 'tu_contraseña')
+            server.sendmail(msg['From'], [msg['To']], msg.as_string())
+
+        return jsonify({'status': True, 'message': 'Código enviado'}), 200
+    except Exception as e:
+        return jsonify({'status': False, 'message': str(e)}), 500
+
+@ws_usuario.route('/usuario/verificarCodigo', methods=['POST'])
+def verificar_codigo():
+    email = request.form.get('email')
+    codigo = request.form.get('codigo')
+
+    if not email or not codigo:
+        return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+    usuario = Usuario.buscar_por_email(email)
+    if not usuario or not usuario.verificar_codigo(codigo):
+        return jsonify({'status': False, 'message': 'Código incorrecto'}), 400
+
+    return jsonify({'status': True, 'message': 'Código verificado'}), 200
+
+@ws_usuario.route('/usuario/restablecerContrasena', methods=['POST'])
+def restablecer_contrasena():
+    email = request.form.get('email')
+    nueva_contrasena = request.form.get('nuevaContrasena')
+
+    if not email or not nueva_contrasena:
+        return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+    usuario = Usuario.buscar_por_email(email)
+    if not usuario:
+        return jsonify({'status': False, 'message': 'Usuario no encontrado'}), 404
+
+    usuario.cambiar_contrasena(nueva_contrasena)
+
+    return jsonify({'status': True, 'message': 'Contraseña restablecida'}), 200
