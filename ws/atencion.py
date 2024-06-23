@@ -220,3 +220,37 @@ def reprogramar_cita():
             return jsonify(resultadoAgregarJSONObject), 200 # OK
         else:
             return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
+        
+
+
+@ws_atencion.route('/atencion/historial/<int:paciente_id>', methods=['GET'])
+#@vt.validar
+def obtener_historial_paciente(paciente_id):
+    if request.method == 'GET': 
+        if not paciente_id:
+            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400  # Bad Request
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtener_historial_por_paciente(paciente_id))
+
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content
+        
+@ws_atencion.route('/atencion/detalle-historial/<int:cita_id>', methods=['GET'])
+#@vt.validar
+def obtener_detalle_historial_paciente(cita_id):
+    if request.method == 'GET': 
+        if not cita_id:
+            return jsonify({'status': False, 'message': 'ID de cita no válido'}), 400  # Bad Request
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtener_detalle_historial_por_paciente(cita_id))
+
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content

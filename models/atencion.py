@@ -290,16 +290,11 @@ class Atencion():
             a.diagnostico,
             a.anotacion,
             a.costo,
-            CASE a.estado 
-                WHEN 'R' THEN 'REALIZADA'
-                WHEN 'C' THEN 'CANCELADA'
-                WHEN 'A' THEN 'APLAZADA'
-                WHEN 'P' THEN 'PROGRAMADA'
-                ELSE 'Estado desconocido'
-            END AS estado
+            e.estado AS estado
         FROM cita_atencion a
         INNER JOIN usuario p ON a.paciente_id = p.id
         INNER JOIN usuario o ON a.odontologo_id = o.id
+        INNER JOIN estado_cita_atencion e on e.id = a.id_estado_cita
         WHERE a.paciente_id=%s AND a.estado='P' or a.estado='A'
         ORDER BY a.fecha, a.hora;
         """
@@ -352,7 +347,6 @@ class Atencion():
         return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Cita cancelada correctamente'})
     
 
-
     def reprogramar_cita_atencion_por_paciente(self):
         con = db().open
         
@@ -383,3 +377,77 @@ class Atencion():
                 
         return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Cita aplazada correctamente'})
     
+
+    def obtener_historial_por_paciente(self, paciente_id):
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        sql = """
+        SELECT 
+            c.id, 
+            c.fecha, 
+            c.hora, 
+            c.diagnostico, 
+            c.anotacion, 
+            (SELECT CONCAT(nombre, ' ', ape_completo) FROM usuario WHERE id=c.odontologo_id) AS odontologo 
+        FROM cita_atencion c
+            INNER JOIN usuario u ON u.id=c.paciente_id
+            INNER JOIN estado_cita_atencion e ON e.id=c.id_estado_cita
+            WHERE c.paciente_id=%s AND e.estado="REALIZADA"
+        """
+        
+        cursor.execute(sql, paciente_id)
+        datos = cursor.fetchall()
+        
+        cursor.close()
+        con.close()
+
+        if datos:
+            return json.dumps({'status': True, 'data': datos, 'message': 'Historial médico'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+     
+
+
+
+    def obtener_detalle_historial_por_paciente(self, cita_id):
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        detalle_historial = {}
+
+        sql_tratamiento = """
+        SELECT
+            t.nombre AS tratamiento, 
+            t.descripcion AS descripcion_tratamiento, 
+            t.costo AS costo_tratamiento
+        FROM cita_atencion c
+        INNER JOIN atencion_tratamiento a ON a.atencion_id = c.id
+        INNER JOIN tratamiento t ON a.tratamiento_id = t.id
+        WHERE c.id = %s;
+        """
+        sql_receta = """SELECT id AS receta_id, medicamento, dosis FROM receta 
+	        WHERE atencion_id = %s;
+        """
+        
+        
+        cursor.execute(sql_tratamiento, cita_id)
+        datos_tratamiento = cursor.fetchall()
+        
+        detalle_historial["tratamientos"] = datos_tratamiento
+
+        cursor.execute(sql_receta, cita_id)
+        datos_receta= cursor.fetchall()
+
+        detalle_historial["recetas"] = datos_receta
+
+        cursor.close()
+        con.close()
+
+        if detalle_historial:
+            return json.dumps({'status': True, 'data': detalle_historial, 'message': 'Detalle historial médico'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+     
