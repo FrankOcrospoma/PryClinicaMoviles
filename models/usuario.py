@@ -98,3 +98,16 @@ class Usuario():
             return json.dumps({'status': True, 'data': usuarios_list, 'message': 'Lista de usuarios'})
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay usuarios registrados'})
+        
+        
+    def cambiar_contrasena(self, nueva_contrasena):
+        try:
+            con = db().open
+            cursor = con.cursor()
+            query = "UPDATE usuario SET contrasena = %s WHERE id = %s"
+            values = (nueva_contrasena, self.id)
+            cursor.execute(query, values)
+            con.commit()
+            return json.dumps({'status': True, 'message': 'Contraseña actualizada correctamente'})
+        except Exception as e:
+            return json.dumps({'status': False, 'message': str(e)})
