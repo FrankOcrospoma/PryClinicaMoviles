@@ -198,7 +198,7 @@ def enviar_codigo_recuperacion():
 
     # Enviar el código por correo electrónico
     try:
-        msg = MIMEText(f'Tu código de verificación es: {codigo}')
+        msg = MIMEText(f'Tu código de verificación es: {codigo}', _charset="UTF-8")
         msg['Subject'] = 'Recuperación de contraseña'
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
