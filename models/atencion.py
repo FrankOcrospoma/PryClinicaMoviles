@@ -339,7 +339,7 @@ class Atencion():
         INNER JOIN usuario p ON a.paciente_id = p.id
         INNER JOIN usuario o ON a.odontologo_id = o.id
         INNER JOIN estado_cita_atencion e on e.id = a.id_estado_cita
-        WHERE a.paciente_id=%s AND e.estado='PROGRAMADA' or e.estado='APLAZADA'
+        WHERE AND e.estado='PROGRAMADA' or e.estado='APLAZADA'
         ORDER BY a.fecha, a.hora;
         """
         

@@ -260,10 +260,10 @@ def obtener_detalle_historial_paciente(cita_id):
         
         
         
-        
-@ws_atencion.route('/atencion/citas-paciente/', methods=['GET'])
+    
+@ws_atencion.route('/atencion/citas/', methods=['GET'])
 #@vt.validar
-def obtener_citas_paciente():
+def obtener_citas():
     if request.method == 'GET': 
 
         obj = Atencion()
