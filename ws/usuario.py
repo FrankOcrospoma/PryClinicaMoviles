@@ -190,22 +190,29 @@ def enviar_codigo_recuperacion():
     codigo = ''.join(random.choices('0123456789', k=6))
 
     # Aquí debes guardar el código en la base de datos asociado al usuario
-    usuario.guardar_codigo_recuperacion(codigo)
+    try:
+        usuario.guardar_codigo_recuperacion(codigo)
+    except Exception as e:
+        print(f"Error al guardar el código de recuperación en la base de datos: {e}")
+        return jsonify({'status': False, 'message': 'Error al guardar el código de recuperación en la base de datos'}), 500
 
     # Enviar el código por correo electrónico
     try:
         msg = MIMEText(f'Tu código de verificación es: {codigo}')
         msg['Subject'] = 'Recuperación de contraseña'
-        msg['From'] = 'tu_correo@example.com'
+        msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
 
         with smtplib.SMTP('smtp.example.com') as server:
-            server.login('tu_correo@example.com', 'tu_contraseña')
+            server.login('frankocrospomaugaz@gmail.com', 'tu_contraseña')
             server.sendmail(msg['From'], [msg['To']], msg.as_string())
-
+        
+        print(f"Código de verificación enviado correctamente a {email}")
         return jsonify({'status': True, 'message': 'Código enviado'}), 200
     except Exception as e:
+        print(f"Error al enviar el correo electrónico: {e}")
         return jsonify({'status': False, 'message': str(e)}), 500
+
 
 @ws_usuario.route('/usuario/verificarCodigo', methods=['POST'])
 def verificar_codigo():
