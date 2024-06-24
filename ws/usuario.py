@@ -254,3 +254,4 @@ def restablecer_contrasena():
     usuario.cambiar_contrasena(nueva_contrasena)
 
     return jsonify({'status': True, 'message': 'Contraseña restablecida'}), 200
+

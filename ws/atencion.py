@@ -26,6 +26,9 @@ def lista(estado):
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
         
+
+        
+        
 @ws_atencion.route('/atencion/registrar', methods=['POST'])
 #@vt.validar
 def registrar_atencion():
@@ -248,6 +251,23 @@ def obtener_detalle_historial_paciente(cita_id):
 
         obj = Atencion()
         resultadoAtencionJSONObject = json.loads(obj.obtener_detalle_historial_por_paciente(cita_id))
+
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content
+        
+        
+        
+        
+@ws_atencion.route('/atencion/citas-paciente/', methods=['GET'])
+#@vt.validar
+def obtener_citas_paciente():
+    if request.method == 'GET': 
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtener_citas)
 
 
         if resultadoAtencionJSONObject['status']:
