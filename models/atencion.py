@@ -252,13 +252,13 @@ class Atencion():
                 fecha, 
                 hora, 
                 motivo_consulta,
-                estado
-        ) VALUES (%s, %s, %s, %s, %s, %s);
+                id_estado_cita
+        ) VALUES (%s, %s, %s, %s, %s, (SELECT id FROM estado_cita_atencion WHERE estado = 'PROGRAMADA') as estado);
         """
         
         try:
             con.autocommit = False
-            cursor.execute(sql, [self.paciente_id, self.odontologo_id, self.fecha, self.hora, self.motivo_consulta, self.estado])
+            cursor.execute(sql, [self.paciente_id, self.odontologo_id, self.fecha, self.hora, self.motivo_consulta])
             self.id = con.insert_id()  
             con.commit()
                 

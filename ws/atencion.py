@@ -134,7 +134,7 @@ def registrar_cita():
         diagnostico = None
         anotacion = None
         costo = None
-        estado = 'P'
+        estado = None
 
         obj = Atencion(0,paciente_id, odontologo_id, fecha, hora, motivo_consulta, diagnostico, anotacion, costo, estado)
         
