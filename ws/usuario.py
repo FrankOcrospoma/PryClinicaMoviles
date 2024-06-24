@@ -213,7 +213,7 @@ def enviar_codigo_recuperacion():
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
             print("Conexión al servidor SMTP establecida")
-            server.login('frankocrospomaugaz@gmail.com', 'tu_contraseña')
+            server.login('ocrospomaugazfrank@gmail.com', 'Frankrack.2003')
             print("Inicio de sesión en el servidor SMTP exitoso")
             server.sendmail(msg['From'], msg['To'], msg.as_string())
             print(f"Correo enviado a {email}")
