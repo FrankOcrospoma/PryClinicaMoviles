@@ -30,8 +30,8 @@ class Usuario():
         try:
             con.autocommit = False
             direccion = self.direccion if self.direccion is not None else ""
-            telefono = self.telefono if self.telefono is not None else ""
-            foto = self.foto if self.foto is not None else ""
+            telefono = self.telefono si la.telefono no es None else ""
+            foto = la.foto si no es None else ""
             cursor.execute(sql, [self.nombre_usuario, self.email, self.contrasena, self.estado, self.token, self.estado_token, self.nombre, self.ape_completo, self.fecha_nac, self.documento, self.tipo_documento_id, self.sexo, direccion, telefono, foto, self.rol_id])
             con.commit()
         except con.Error as error:
@@ -45,7 +45,7 @@ class Usuario():
     def actualizar(self):
         con = db().open
         cursor = con.cursor()
-        sql = "UPDATE usuario SET nombre_usuario = %s, email = %s,  estado = %s, token = %s, estado_token = %s, nombre = %s, ape_completo = %s, fecha_nac = %s, documento = %s, sexo = %s, direccion = %s, telefono = %s, foto = %s, rol_id = %s WHERE id = %s"
+        sql = "UPDATE usuario SET nombre_usuario = %s, email = %s, estado = %s, token = %s, estado_token = %s, nombre = %s, ape_completo = %s, fecha_nac = %s, documento = %s, sexo = %s, direccion = %s, telefono = %s, foto = %s, rol_id = %s WHERE id = %s"
         try:
             con.autocommit = False
             direccion = self.direccion if self.direccion is not None else ""
@@ -146,23 +146,23 @@ class Usuario():
         if usuario_data:
             print(usuario_data)  # Depuración para verificar la estructura de usuario_data
             usuario_data_dict = {
-                'id': usuario_data[0],
-                'nombre_usuario': usuario_data[1],
-                'email': usuario_data[2],
-                'contrasena': usuario_data[3],
-                'estado': usuario_data[4],
-                'token': usuario_data[5],
-                'estado_token': usuario_data[6],
-                'nombre': usuario_data[7],
-                'ape_completo': usuario_data[8],
-                'fecha_nac': usuario_data[9],
-                'documento': usuario_data[10],
-                'tipo_documento_id': usuario_data[11],
-                'sexo': usuario_data[12],
-                'direccion': usuario_data[13],
-                'telefono': usuario_data[14],
-                'foto': usuario_data[15],
-                'rol_id': usuario_data[16]
+                'id': usuario_data['id'],
+                'nombre_usuario': usuario_data['nombre_usuario'],
+                'email': usuario_data['email'],
+                'contrasena': usuario_data['contrasena'],
+                'estado': usuario_data['estado'],
+                'token': usuario_data['token'],
+                'estado_token': usuario_data['estado_token'],
+                'nombre': usuario_data['nombre'],
+                'ape_completo': usuario_data['ape_completo'],
+                'fecha_nac': usuario_data['fecha_nac'],
+                'documento': usuario_data['documento'],
+                'tipo_documento_id': usuario_data['tipo_documento_id'],
+                'sexo': usuario_data['sexo'],
+                'direccion': usuario_data['direccion'],
+                'telefono': usuario_data['telefono'],
+                'foto': usuario_data['foto'],
+                'rol_id': usuario_data['rol_id']
             }
             return Usuario(**usuario_data_dict)
         else:
