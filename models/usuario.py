@@ -141,7 +141,12 @@ class Usuario():
         con.close()
 
         if usuario_data:
-            # Adaptar los nombres de los campos a los argumentos del constructor
+            # Verificar si usuario_data es un diccionario y contiene todas las claves esperadas
+            required_keys = ['id', 'nombre_usuario', 'email', 'contrasena', 'estado', 'token', 'estado_token', 'nombre', 'ape_completo', 'fecha_nac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono', 'foto', 'rol_id']
+            for key in required_keys:
+                if key not in usuario_data:
+                    usuario_data[key] = None  # Establecer a None si la clave no existe
+
             usuario_data_dict = {
                 'id': usuario_data['id'],
                 'nombre_usuario': usuario_data['nombre_usuario'],
