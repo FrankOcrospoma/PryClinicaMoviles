@@ -7,7 +7,7 @@ import validarToken as vt
 from github import Github
 import random
 import smtplib
-from email.message import EmailMessage
+from email.mime.text import MIMEText
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
@@ -199,12 +199,11 @@ def enviar_codigo_recuperacion():
     # Enviar el código por correo electrónico
     try:
         print(f"Creando mensaje de correo para {email} con código {codigo}")
-        msg = EmailMessage()
-        msg.set_content(f'Tu código de verificación es: {codigo}')
+        msg = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
         msg['Subject'] = 'Recuperación de contraseña'
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
-        msg.set_charset('utf-8')
+
         print(f"Mensaje creado: {msg}")
 
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
