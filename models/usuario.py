@@ -143,18 +143,23 @@ class Usuario():
         if usuario_data:
             # Adaptar los nombres de los campos a los argumentos del constructor
             usuario_data_dict = {
-                'id': usuario_data[0],
-                'nombre_usuario': usuario_data[1],
-                'email': usuario_data[2],
-                'nombre': usuario_data[3],
-                'ape_completo': usuario_data[4],
-                'fecha_nac': usuario_data[5],
-                'documento': usuario_data[6],
-                'sexo': usuario_data[7],
-                'direccion': usuario_data[8],
-                'telefono': usuario_data[9],
-                'foto': usuario_data[10],
-                'rol_id': usuario_data[11]
+                'id': usuario_data['id'],
+                'nombre_usuario': usuario_data['nombre_usuario'],
+                'email': usuario_data['email'],
+                'contrasena': usuario_data['contrasena'],
+                'estado': usuario_data['estado'],
+                'token': usuario_data['token'],
+                'estado_token': usuario_data['estado_token'],
+                'nombre': usuario_data['nombre'],
+                'ape_completo': usuario_data['ape_completo'],
+                'fecha_nac': usuario_data['fecha_nac'],
+                'documento': usuario_data['documento'],
+                'tipo_documento_id': usuario_data['tipo_documento_id'],
+                'sexo': usuario_data['sexo'],
+                'direccion': usuario_data['direccion'],
+                'telefono': usuario_data['telefono'],
+                'foto': usuario_data['foto'],
+                'rol_id': usuario_data['rol_id']
             }
             return Usuario(**usuario_data_dict)
         else:
