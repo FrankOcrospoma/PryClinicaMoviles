@@ -128,43 +128,40 @@ class Usuario():
             con.close()
         return json.dumps({'status': True, 'data': None, 'message': "Código de recuperación guardado correctamente"})
 
-    # Otros métodos de la clase...
-
     @staticmethod
     def buscar_por_email(email):
         con = db().open
         cursor = con.cursor()
-        sql = "SELECT id, nombre_usuario, email, nombre, ape_completo, fecha_nac, documento, sexo, direccion, telefono, foto, rol_id FROM usuario WHERE email = %s AND estado = '1'"
+        sql = """
+            SELECT id, nombre_usuario, email, contrasena, estado, token, estado_token, nombre, ape_completo, 
+                   fecha_nac, documento, tipo_documento_id, sexo, direccion, telefono, foto, rol_id
+            FROM usuario 
+            WHERE email = %s AND estado = '1'
+        """
         cursor.execute(sql, [email])
         usuario_data = cursor.fetchone()
         cursor.close()
         con.close()
 
         if usuario_data:
-            # Verificar si usuario_data es un diccionario y contiene todas las claves esperadas
-            required_keys = ['id', 'nombre_usuario', 'email', 'contrasena', 'estado', 'token', 'estado_token', 'nombre', 'ape_completo', 'fecha_nac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono', 'foto', 'rol_id']
-            for key in required_keys:
-                if key not in usuario_data:
-                    usuario_data[key] = None  # Establecer a None si la clave no existe
-
             usuario_data_dict = {
-                'id': usuario_data['id'],
-                'nombre_usuario': usuario_data['nombre_usuario'],
-                'email': usuario_data['email'],
-                'contrasena': usuario_data['contrasena'],
-                'estado': usuario_data['estado'],
-                'token': usuario_data['token'],
-                'estado_token': usuario_data['estado_token'],
-                'nombre': usuario_data['nombre'],
-                'ape_completo': usuario_data['ape_completo'],
-                'fecha_nac': usuario_data['fecha_nac'],
-                'documento': usuario_data['documento'],
-                'tipo_documento_id': usuario_data['tipo_documento_id'],
-                'sexo': usuario_data['sexo'],
-                'direccion': usuario_data['direccion'],
-                'telefono': usuario_data['telefono'],
-                'foto': usuario_data['foto'],
-                'rol_id': usuario_data['rol_id']
+                'id': usuario_data[0],
+                'nombre_usuario': usuario_data[1],
+                'email': usuario_data[2],
+                'contrasena': usuario_data[3],
+                'estado': usuario_data[4],
+                'token': usuario_data[5],
+                'estado_token': usuario_data[6],
+                'nombre': usuario_data[7],
+                'ape_completo': usuario_data[8],
+                'fecha_nac': usuario_data[9],
+                'documento': usuario_data[10],
+                'tipo_documento_id': usuario_data[11],
+                'sexo': usuario_data[12],
+                'direccion': usuario_data[13],
+                'telefono': usuario_data[14],
+                'foto': usuario_data[15],
+                'rol_id': usuario_data[16]
             }
             return Usuario(**usuario_data_dict)
         else:
