@@ -253,7 +253,7 @@ class Atencion():
                 hora, 
                 motivo_consulta,
                 id_estado_cita
-        ) VALUES (%s, %s, %s, %s, %s, (SELECT id FROM estado_cita_atencion WHERE estado = 'PROGRAMADA') as estado);
+        ) VALUES (%s, %s, %s, %s, %s, (SELECT id FROM estado_cita_atencion WHERE estado = 'PROGRAMADA'));
         """
         
         try:
