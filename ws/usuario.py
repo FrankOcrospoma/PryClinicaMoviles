@@ -203,7 +203,8 @@ def enviar_codigo_recuperacion():
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
 
-        with smtplib.SMTP('smtp.example.com') as server:
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
             server.login('frankocrospomaugaz@gmail.com', 'tu_contraseña')
             server.sendmail(msg['From'], [msg['To']], msg.as_string())
         
