@@ -303,3 +303,18 @@ def obtenerOdontologos():
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
 
+
+@ws_atencion.route('/atencion/odontologos', methods=['GET'])
+#@vt.validar
+def obtener_odontologos():
+    if request.method == 'GET': 
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtener_odontologos())
+
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content
+

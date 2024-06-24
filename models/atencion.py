@@ -360,6 +360,7 @@ class Atencion():
             return json.dumps({'status': True, 'data': datos_modificados, 'message': 'Lista de citas programadas'}, cls=CustomJsonEncoder)
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+        
     def obtenerPacientes(self):
         con = db().open
         
@@ -404,9 +405,6 @@ class Atencion():
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
              
-
-
-    
 
     def reprogramar_cita_atencion_por_paciente(self):
         con = db().open
@@ -470,8 +468,6 @@ class Atencion():
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
      
 
-
-
     def obtener_detalle_historial_por_paciente(self, cita_id):
         con = db().open
         
@@ -512,3 +508,28 @@ class Atencion():
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
      
+
+    def obtener_odontologos(self):
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        sql = """
+        SELECT u.id, CONCAT(u.nombre, ' ', u.ape_completo) as nombre_completo
+        FROM usuario u 
+        INNER JOIN rol r ON u.rol_id=r.id
+        WHERE r.nombre = 'odontologo' AND u.estado=1;
+        """
+        
+        cursor.execute(sql)
+        datos = cursor.fetchall()
+        
+        cursor.close()
+        con.close()
+
+
+        if datos:
+            return json.dumps({'status': True, 'data': datos, 'message': 'Lista de odontólogos activos'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+       
