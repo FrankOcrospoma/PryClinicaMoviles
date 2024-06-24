@@ -144,6 +144,7 @@ class Usuario():
         con.close()
 
         if usuario_data:
+            print(usuario_data)  # Depuración para verificar la estructura de usuario_data
             usuario_data_dict = {
                 'id': usuario_data[0],
                 'nombre_usuario': usuario_data[1],
