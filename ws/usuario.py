@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from models.usuario import Usuario
 import os
 import json
@@ -196,13 +198,15 @@ def enviar_codigo_recuperacion():
         print(f"Error al guardar el código de recuperación en la base de datos: {e}")
         return jsonify({'status': False, 'message': 'Error al guardar el código de recuperación en la base de datos'}), 500
 
-    # Enviar el código por correo electrónico
     try:
         print(f"Creando mensaje de correo para {email} con código {codigo}")
-        msg = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
+        msg = MIMEMultipart()
         msg['Subject'] = 'Recuperación de contraseña'
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
+
+        body = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
+        msg.attach(body)
 
         print(f"Mensaje creado: {msg}")
 
@@ -211,9 +215,9 @@ def enviar_codigo_recuperacion():
             print("Conexión al servidor SMTP establecida")
             server.login('frankocrospomaugaz@gmail.com', 'tu_contraseña')
             print("Inicio de sesión en el servidor SMTP exitoso")
-            server.send_message(msg)
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
             print(f"Correo enviado a {email}")
-        
+
         return jsonify({'status': True, 'message': 'Código enviado'}), 200
     except Exception as e:
         print(f"Error al enviar el correo electrónico: {e}")
