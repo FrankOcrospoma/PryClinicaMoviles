@@ -199,10 +199,12 @@ def enviar_codigo_recuperacion():
 
     # Enviar el código por correo electrónico
     try:
-        msg = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
+        msg = MIMEMultipart()
         msg['Subject'] = 'Recuperación de contraseña'
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
+        body = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
+        msg.attach(body)
 
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
