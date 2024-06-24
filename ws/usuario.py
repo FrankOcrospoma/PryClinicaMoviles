@@ -8,6 +8,7 @@ from github import Github
 import random
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
@@ -198,7 +199,7 @@ def enviar_codigo_recuperacion():
 
     # Enviar el código por correo electrónico
     try:
-        msg = MIMEText(f'Tu código de verificación es: {codigo}', _charset="UTF-8")
+        msg = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
         msg['Subject'] = 'Recuperación de contraseña'
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
