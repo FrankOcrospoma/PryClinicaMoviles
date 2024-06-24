@@ -382,6 +382,28 @@ class Atencion():
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
              
+    def obtenerOdontologos(self):
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        
+        sql = """
+        select * from usuario
+        WHERE rol_id = 3;
+        """
+        
+        cursor.execute(sql)
+        datos = cursor.fetchall()
+        
+        cursor.close()
+        con.close()
+
+        if datos:
+            return json.dumps({'status': True, 'data': datos, 'message': 'odontologos'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+             
 
 
     
