@@ -360,35 +360,30 @@ class Atencion():
             return json.dumps({'status': True, 'data': datos_modificados, 'message': 'Lista de citas programadas'}, cls=CustomJsonEncoder)
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
-        
-
-    def cancelar_cita_atencion_por_paciente(self):
+    def obtenerPacientes(self):
         con = db().open
         
-        cursor = con.cursor()
+        cursor = con.cursor() 
+        
         
         sql = """
-        UPDATE cita_atencion
-        SET 
-            estado = 'C'
-        WHERE id = %s;
+        select * from usuario
+        WHERE rol_id = 2;
         """
         
-        try:
-            con.autocommit = False
-            cursor.execute(sql, [self.id])
-            con.commit()
-                
-        except con.Error as error:
-            con.rollback()
-            
-            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+        cursor.execute(sql)
+        datos = cursor.fetchall()
+        
+        cursor.close()
+        con.close()
 
-        finally:
-            cursor.close()
-            con.close()
-                
-        return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Cita cancelada correctamente'})
+        if datos:
+            return json.dumps({'status': True, 'data': datos, 'message': 'pacientes'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+             
+
+
     
 
     def reprogramar_cita_atencion_por_paciente(self):

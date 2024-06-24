@@ -274,3 +274,18 @@ def obtener_citas():
             return jsonify(resultadoAtencionJSONObject), 200 # OK
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
+        
+@ws_atencion.route('/atencion/citas/pacientes', methods=['GET'])
+#@vt.validar
+def obtenerPacientes():
+    if request.method == 'GET': 
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtenerPacientes())
+
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content
+
