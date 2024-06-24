@@ -267,7 +267,7 @@ def obtener_citas_paciente():
     if request.method == 'GET': 
 
         obj = Atencion()
-        resultadoAtencionJSONObject = json.loads(obj.obtener_citas)
+        resultadoAtencionJSONObject = json.loads(obj.obtener_citas())
 
 
         if resultadoAtencionJSONObject['status']:
