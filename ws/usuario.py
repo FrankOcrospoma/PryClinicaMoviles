@@ -202,7 +202,7 @@ def enviar_codigo_recuperacion():
         print(f"Creando mensaje de correo para {email} con código {codigo}")
         msg = MIMEMultipart()
         msg['Subject'] = 'Recuperación de contraseña'
-        msg['From'] = 'frankocrospomaugaz@gmail.com'
+        msg['From'] = 'ocrospomaugazfrank@gmail.com'
         msg['To'] = email
 
         body = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
