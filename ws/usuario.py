@@ -198,23 +198,28 @@ def enviar_codigo_recuperacion():
 
     # Enviar el código por correo electrónico
     try:
-        msg = EmailMessage()
-        msg.set_content(f'Tu código de verificación es: {codigo}')
-        msg['Subject'] = 'Recuperación de contraseña'
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+
+        msg = MIMEMultipart()
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
-        msg.set_charset('utf-8')
+        msg['Subject'] = 'Recuperación de contraseña'
+
+        body = f'Tu código de verificación es: {codigo}'
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
             server.login('frankocrospomaugaz@gmail.com', 'tu_contraseña')
-            server.send_message(msg)
-        
+            server.sendmail(msg['From'], [msg['To']], msg.as_string())
+
         print(f"Código de verificación enviado correctamente a {email}")
         return jsonify({'status': True, 'message': 'Código enviado'}), 200
     except Exception as e:
         print(f"Error al enviar el correo electrónico: {e}")
         return jsonify({'status': False, 'message': str(e)}), 500
+
 
 
 @ws_usuario.route('/usuario/verificarCodigo', methods=['POST'])
