@@ -7,7 +7,8 @@ import validarToken as vt
 from github import Github
 import random
 import smtplib
-from email.message import EmailMessage
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 ws_usuario = Blueprint('ws_usuario', __name__)
 
@@ -198,28 +199,23 @@ def enviar_codigo_recuperacion():
 
     # Enviar el código por correo electrónico
     try:
-        from email.mime.text import MIMEText
-        from email.mime.multipart import MIMEMultipart
-
         msg = MIMEMultipart()
+        msg['Subject'] = 'Recuperación de contraseña'
         msg['From'] = 'frankocrospomaugaz@gmail.com'
         msg['To'] = email
-        msg['Subject'] = 'Recuperación de contraseña'
-
-        body = f'Tu código de verificación es: {codigo}'
-        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+        body = MIMEText(f'Tu código de verificación es: {codigo}', 'plain', 'utf-8')
+        msg.attach(body)
 
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
             server.login('frankocrospomaugaz@gmail.com', 'tu_contraseña')
             server.sendmail(msg['From'], [msg['To']], msg.as_string())
-
+        
         print(f"Código de verificación enviado correctamente a {email}")
         return jsonify({'status': True, 'message': 'Código enviado'}), 200
     except Exception as e:
         print(f"Error al enviar el correo electrónico: {e}")
         return jsonify({'status': False, 'message': str(e)}), 500
-
 
 
 @ws_usuario.route('/usuario/verificarCodigo', methods=['POST'])
