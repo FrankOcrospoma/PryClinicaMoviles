@@ -30,8 +30,8 @@ class Usuario():
         try:
             con.autocommit = False
             direccion = self.direccion if self.direccion is not None else ""
-            telefono = self.telefono si la.telefono no es None else ""
-            foto = la.foto si no es None else ""
+            telefono = self.telefono if self.telefono is not None else ""
+            foto = self.foto if self.foto is not None else ""
             cursor.execute(sql, [self.nombre_usuario, self.email, self.contrasena, self.estado, self.token, self.estado_token, self.nombre, self.ape_completo, self.fecha_nac, self.documento, self.tipo_documento_id, self.sexo, direccion, telefono, foto, self.rol_id])
             con.commit()
         except con.Error as error:
