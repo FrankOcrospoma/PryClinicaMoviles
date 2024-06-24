@@ -4,24 +4,24 @@ from datetime import date
 from util import CustomJsonEncoder
 
 class Usuario():
-    def __init__(self, id=None, nombreUsuario=None, email=None, contrasena=None, estado=None, token=None, estadoToken=None, nombre=None, apeCompleto=None, fechaNac=None, documento=None, tipo_documento_id = None, sexo=None, direccion=None, telefono=None, foto=None, rolId=None):
+    def __init__(self, id=None, nombre_usuario=None, email=None, contrasena=None, estado=None, token=None, estado_token=None, nombre=None, ape_completo=None, fecha_nac=None, documento=None, tipo_documento_id=None, sexo=None, direccion=None, telefono=None, foto=None, rol_id=None):
         self.id = id
-        self.nombreUsuario = nombreUsuario
+        self.nombre_usuario = nombre_usuario
         self.email = email
         self.contrasena = contrasena
         self.estado = estado
         self.token = token
-        self.estadoToken = estadoToken
+        self.estado_token = estado_token
         self.nombre = nombre
-        self.apeCompleto = apeCompleto
-        self.fechaNac = fechaNac
+        self.ape_completo = ape_completo
+        self.fecha_nac = fecha_nac
         self.documento = documento
         self.tipo_documento_id = tipo_documento_id
         self.sexo = sexo
         self.direccion = direccion
         self.telefono = telefono
         self.foto = foto
-        self.rolId = rolId
+        self.rol_id = rol_id
 
     def agregar(self):
         con = db().open
@@ -32,7 +32,7 @@ class Usuario():
             direccion = self.direccion if self.direccion is not None else ""
             telefono = self.telefono if self.telefono is not None else ""
             foto = self.foto if self.foto is not None else ""
-            cursor.execute(sql, [self.nombreUsuario, self.email, self.contrasena, self.estado, self.token, self.estadoToken, self.nombre, self.apeCompleto, self.fechaNac, self.documento, self.tipo_documento_id, self.sexo, direccion, telefono, foto, self.rolId])
+            cursor.execute(sql, [self.nombre_usuario, self.email, self.contrasena, self.estado, self.token, self.estado_token, self.nombre, self.ape_completo, self.fecha_nac, self.documento, self.tipo_documento_id, self.sexo, direccion, telefono, foto, self.rol_id])
             con.commit()
         except con.Error as error:
             con.rollback()
@@ -51,7 +51,7 @@ class Usuario():
             direccion = self.direccion if self.direccion is not None else ""
             telefono = self.telefono if self.telefono is not None else ""
             foto = self.foto if self.foto is not None else ""
-            cursor.execute(sql, [self.nombreUsuario, self.email, self.estado, self.token, self.estadoToken, self.nombre, self.apeCompleto, self.fechaNac, self.documento, self.sexo, direccion, telefono, foto, self.rolId, self.id])
+            cursor.execute(sql, [self.nombre_usuario, self.email, self.estado, self.token, self.estado_token, self.nombre, self.ape_completo, self.fecha_nac, self.documento, self.sexo, direccion, telefono, foto, self.rol_id, self.id])
             con.commit()
         except con.Error as error:
             con.rollback()
@@ -98,8 +98,7 @@ class Usuario():
             return json.dumps({'status': True, 'data': usuarios_list, 'message': 'Lista de usuarios'})
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay usuarios registrados'})
-        
-        
+
     def cambiar_contrasena(self, nueva_contrasena):
         try:
             con = db().open
@@ -112,8 +111,7 @@ class Usuario():
         except Exception as e:
             return json.dumps({'status': False, 'message': str(e)})
         
-        
-        # Método para guardar el código de recuperación
+    # Método para guardar el código de recuperación
     def guardar_codigo_recuperacion(self, codigo_recuperacion):
         con = db().open
         cursor = con.cursor()
@@ -143,7 +141,22 @@ class Usuario():
         con.close()
 
         if usuario_data:
-            return Usuario(**usuario_data)
+            # Adaptar los nombres de los campos a los argumentos del constructor
+            usuario_data_dict = {
+                'id': usuario_data[0],
+                'nombre_usuario': usuario_data[1],
+                'email': usuario_data[2],
+                'nombre': usuario_data[3],
+                'ape_completo': usuario_data[4],
+                'fecha_nac': usuario_data[5],
+                'documento': usuario_data[6],
+                'sexo': usuario_data[7],
+                'direccion': usuario_data[8],
+                'telefono': usuario_data[9],
+                'foto': usuario_data[10],
+                'rol_id': usuario_data[11]
+            }
+            return Usuario(**usuario_data_dict)
         else:
             return None
 
