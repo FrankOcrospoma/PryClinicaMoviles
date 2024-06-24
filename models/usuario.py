@@ -111,3 +111,52 @@ class Usuario():
             return json.dumps({'status': True, 'message': 'Contraseña actualizada correctamente'})
         except Exception as e:
             return json.dumps({'status': False, 'message': str(e)})
+        
+        
+        # Método para guardar el código de recuperación
+    def guardar_codigo_recuperacion(self, codigo_recuperacion):
+        con = db().open
+        cursor = con.cursor()
+        sql = "UPDATE usuario SET codigo_recuperacion = %s WHERE email = %s"
+        try:
+            con.autocommit = False
+            cursor.execute(sql, [codigo_recuperacion, self.email])
+            con.commit()
+        except con.Error as error:
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+        finally:
+            cursor.close()
+            con.close()
+        return json.dumps({'status': True, 'data': None, 'message': "Código de recuperación guardado correctamente"})
+
+    # Otros métodos de la clase...
+
+    @staticmethod
+    def buscar_por_email(email):
+        con = db().open
+        cursor = con.cursor()
+        sql = "SELECT id, nombre_usuario, email, nombre, ape_completo, fecha_nac, documento, sexo, direccion, telefono, foto, rol_id FROM usuario WHERE email = %s AND estado = '1'"
+        cursor.execute(sql, [email])
+        usuario_data = cursor.fetchone()
+        cursor.close()
+        con.close()
+
+        if usuario_data:
+            return Usuario(**usuario_data)
+        else:
+            return None
+
+    def verificar_codigo(self, codigo):
+        con = db().open
+        cursor = con.cursor()
+        sql = "SELECT codigo_recuperacion FROM usuario WHERE email = %s AND codigo_recuperacion = %s"
+        cursor.execute(sql, [self.email, codigo])
+        result = cursor.fetchone()
+        cursor.close()
+        con.close()
+
+        if result:
+            return True
+        else:
+            return False
