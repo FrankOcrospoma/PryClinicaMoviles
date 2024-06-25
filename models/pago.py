@@ -99,7 +99,7 @@ class Pago:
             c.id AS cita_id, 
             c.fecha, 
             c.hora, 
-            (SELECT UPPER(CONCAT(nombre, ' ', ape_completo)) FROM usuario WHERE id= c.odontologo_id) as nombre_completo,
+            (SELECT UPPER(CONCAT(nombre, ' ', ape_completo)) FROM usuario WHERE id= c.odontologo_id) as nombre_odontologo,
             c.motivo_consulta, 
             costo
         FROM cita_atencion c
