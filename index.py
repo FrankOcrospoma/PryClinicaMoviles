@@ -10,6 +10,7 @@ from ws.tratamiento import ws_tratamiento
 from ws.rol import ws_rol
 from ws.seguro_dental import ws_seguro_dental
 from routes.informeCitas import main as informeCitas_bp  # Importar el blueprint de informeCitas
+from routes.tratamientoPaciente import main as tratamientoPaciente_bp
 
 # Crear la variable de aplicación con Flask
 app = Flask(__name__)
@@ -25,6 +26,7 @@ app.register_blueprint(ws_pago)
 app.register_blueprint(ws_rol)
 app.register_blueprint(ws_seguro_dental)
 app.register_blueprint(informeCitas_bp)  # Registrar el blueprint de informeCitas
+app.register_blueprint(tratamientoPaciente_bp)
 
 @app.route('/')
 def home():
