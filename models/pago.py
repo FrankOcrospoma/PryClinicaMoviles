@@ -1,6 +1,7 @@
 from bd import Conexion as db
 import json
 from decimal import Decimal
+from datetime import date, time, datetime, timedelta
 
 class Pago:
     def __init__(self, id=None, monto=None, estado=None, atencion_id=None):
@@ -110,17 +111,22 @@ class Pago:
             AND c.paciente_id=%s
             ORDER BY c.fecha, c.hora;
         """
-        cursor.execute(sql, paciente_id)
+        cursor.execute(sql, (paciente_id,))
         pagos = cursor.fetchall()
         cursor.close()
         con.close()
 
-        # Convertir objetos de tipo Decimal a float
+        # Convertir objetos de tipo Decimal a float y date/time/timedelta a string
         pagos_list = []
         for pago in pagos:
             pago_dict = dict(pago)
-            if isinstance(pago_dict['monto'], Decimal):
-                pago_dict['monto'] = float(pago_dict['monto'])
+            for key, value in pago_dict.items():
+                if isinstance(value, Decimal):
+                    pago_dict[key] = float(value)
+                elif isinstance(value, (date, time, datetime)):
+                    pago_dict[key] = value.isoformat()
+                elif isinstance(value, timedelta):
+                    pago_dict[key] = str(value)
             pagos_list.append(pago_dict)
 
         if pagos_list:
