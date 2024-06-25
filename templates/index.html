@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Servicios Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informeCitas.css') }}">
+</head>
+<body>
+    <h1>Servicios web en ejecución</h1>
+    <div class="button-container">
+        <a href="{{ url_for('informeCitas.consultar_informes') }}" class="button">Ir a Informe de Citas</a>
+    </div>
+</body>
+</html>
