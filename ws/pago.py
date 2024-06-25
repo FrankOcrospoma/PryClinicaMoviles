@@ -46,7 +46,7 @@ def eliminar_pago():
 #APIS PARA APP PACIENTE
 
 @ws_pago.route('/pago/pendientes/<int:paciente_id>', methods=['GET'])
-@vt.validar
+#@vt.validar
 def lista_pagos_pendientes(paciente_id):
     if request.method == 'GET':
         if not paciente_id:
