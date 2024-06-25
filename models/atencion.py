@@ -416,7 +416,7 @@ class Atencion():
         SET 
             fecha = %s,
             hora = %s,
-            estado = 'A'
+            id_estado_cita = (SELECT id FROM estado_cita_atencion WHERE estado = 'APLAZADA')
         WHERE id = %s;
         """
         
@@ -434,7 +434,7 @@ class Atencion():
             cursor.close()
             con.close()
                 
-        return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Cita aplazada correctamente'})
+        return json.dumps({'status': True, 'data': {'cita_id': self.id}, 'message': 'Cita aplazada correctamente'})
     
 
     def obtener_historial_por_paciente(self, paciente_id):
@@ -533,7 +533,6 @@ class Atencion():
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
        
-
 
     def cancelar_cita_atencion_por_paciente(self):
         con = db().open
