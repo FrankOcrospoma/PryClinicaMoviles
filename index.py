@@ -1,5 +1,5 @@
-from flask import Flask
-#Importar a los módulos que contienen a los servicios web
+from flask import Flask, render_template
+# Importar a los módulos que contienen a los servicios web
 from ws.sesion import ws_sesion
 from ws.producto import ws_producto
 from ws.atencion import ws_atencion
@@ -9,13 +9,13 @@ from ws.pago import ws_pago
 from ws.tratamiento import ws_tratamiento
 from ws.rol import ws_rol
 from ws.seguro_dental import ws_seguro_dental
-#from ws.sesion import ws_sesion
+from routes.informeCitas import main as informeCitas_bp  # Importar el blueprint de informeCitas
+from routes.tratamientoPaciente import main as tratamientoPaciente_bp
 
-#Crear la variable de aplicación con Flask
+# Crear la variable de aplicación con Flask
 app = Flask(__name__)
 
-
-#Registrar los módulos que contienen a los servicios web
+# Registrar los módulos que contienen a los servicios web
 app.register_blueprint(ws_sesion)   
 app.register_blueprint(ws_producto)
 app.register_blueprint(ws_atencion)
@@ -25,11 +25,13 @@ app.register_blueprint(ws_tratamiento)
 app.register_blueprint(ws_pago)
 app.register_blueprint(ws_rol)
 app.register_blueprint(ws_seguro_dental)
+app.register_blueprint(informeCitas_bp)  # Registrar el blueprint de informeCitas
+app.register_blueprint(tratamientoPaciente_bp)
 
 @app.route('/')
 def home():
-    return 'Servicios web en ejecución'
+    return render_template('index.html')
 
-#Iniciar el servicio web con Flask
+# Iniciar el servicio web con Flask
 if __name__ == '__main__':
     app.run(debug=True)

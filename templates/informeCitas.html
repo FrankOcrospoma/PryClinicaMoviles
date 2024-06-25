@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe de Citas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informeCitas.css') }}">
+</head>
+<body>
+    <h1>Informe de Citas</h1>
+    <form method="post" action="{{ url_for('informeCitas.consultar_informes') }}">
+        <label for="fecha_inicio">Fecha Inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+        <label for="fecha_fin">Fecha Fin:</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" required>
+        <label for="paciente_id">Paciente:</label>
+        <select id="paciente_id" name="paciente_id">
+            <option value="">Seleccione un paciente</option>
+            {% for paciente in pacientes %}
+            <option value="{{ paciente.id }}">{{ paciente.nombre }} {{ paciente.ape_completo }}</option>
+            {% endfor %}
+        </select>
+        <label for="odontologo_id">Odontólogo:</label>
+        <select id="odontologo_id" name="odontologo_id">
+            <option value="">Seleccione un odontólogo</option>
+            {% for odontologo in odontologos %}
+            <option value="{{ odontologo.id }}">{{ odontologo.nombre }} {{ odontologo.ape_completo }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="button">Consultar</button>
+    </form>
+
+    {% if informes %}
+    <h2>Resultados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Paciente</th>
+                <th>DNI Paciente</th>
+                <th>Odontólogo</th>
+                <th>DNI Odontólogo</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Motivo Consulta</th>
+                <th>Diagnóstico</th>
+                <th>Anotación</th>
+                <th>Costo</th>
+                <th>Estado Cita</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for informe in informes %}
+            <tr>
+                <td>{{ informe.id }}</td>
+                <td>{{ informe.paciente_nombre }} {{ informe.paciente_apellidos }}</td>
+                <td>{{ informe.paciente_dni }}</td>
+                <td>{{ informe.odontologo_nombre }} {{ informe.odontologo_apellidos }}</td>
+                <td>{{ informe.odontologo_dni }}</td>
+                <td>{{ informe.fecha }}</td>
+                <td>{{ informe.hora }}</td>
+                <td>{{ informe.motivo_consulta }}</td>
+                <td>{{ informe.diagnostico }}</td>
+                <td>{{ informe.anotacion }}</td>
+                <td>{{ informe.costo }}</td>
+                <td>{{ informe.id_estado_cita }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+</html>
