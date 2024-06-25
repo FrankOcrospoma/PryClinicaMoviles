@@ -224,8 +224,6 @@ def reprogramar_cita():
         else:
             return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
         
-
-
 @ws_atencion.route('/atencion/historial/<int:paciente_id>', methods=['GET'])
 #@vt.validar
 def obtener_historial_paciente(paciente_id):
@@ -257,9 +255,7 @@ def obtener_detalle_historial_paciente(cita_id):
             return jsonify(resultadoAtencionJSONObject), 200 # OK
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
-        
-        
-        
+              
     
 @ws_atencion.route('/atencion/citas/', methods=['GET'])
 #@vt.validar

@@ -533,3 +533,33 @@ class Atencion():
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
        
+
+
+    def cancelar_cita_atencion_por_paciente(self):
+        con = db().open
+        
+        cursor = con.cursor()
+        
+        sql = """
+        UPDATE cita_atencion
+        SET 
+        id_estado_cita = (SELECT id FROM estado_cita_atencion WHERE estado = "CANCELADA")
+        WHERE id = %s;
+        """
+        
+        try:
+            con.autocommit = False
+            cursor.execute(sql, [self.id])
+            con.commit()
+                
+        except con.Error as error:
+            con.rollback()
+            
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+                
+        return json.dumps({'status': True, 'data': {'cita_id': self.id}, 'message': 'Cita cancelada correctamente'})
+    
