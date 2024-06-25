@@ -40,3 +40,23 @@ def eliminar_pago():
         id = request.form['id']
         obj = Pago(int(id))
         return jsonify(json.loads(obj.eliminar_pago())), 200
+
+
+
+#APIS PARA APP PACIENTE
+
+@ws_pago.route('/pago/pendientes/<int:paciente_id>', methods=['GET'])
+@vt.validar
+def lista_pagos_pendientes(paciente_id):
+    if request.method == 'GET':
+        if not paciente_id:
+            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400  # Bad Request
+
+        obj = Pago()
+
+        resultadoPagoJSONObject = json.loads(obj.listar_pagos_pendientes(paciente_id))
+
+        if resultadoPagoJSONObject['status']:
+            return jsonify(resultadoPagoJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoPagoJSONObject), 204 
