@@ -60,3 +60,20 @@ def lista_pagos_pendientes(paciente_id):
             return jsonify(resultadoPagoJSONObject), 200 # OK
         else:
             return jsonify(resultadoPagoJSONObject), 204 
+        
+
+@ws_pago.route('/pago/detalle/<int:cita_id>', methods=['GET'])
+#@vt.validar
+def lista_detalle_pago(cita_id):
+    if request.method == 'GET':
+        if not cita_id:
+            return jsonify({'status': False, 'message': 'ID de cita no válido'}), 400  # Bad Request
+
+        obj = Pago()
+
+        resultadoPagoJSONObject = json.loads(obj.listar_detalle_pago_cita(cita_id))
+
+        if resultadoPagoJSONObject['status']:
+            return jsonify(resultadoPagoJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoPagoJSONObject), 204 

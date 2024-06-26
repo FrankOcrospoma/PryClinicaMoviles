@@ -133,7 +133,45 @@ class Pago:
             pagos_list.append(pago_dict)
 
         if pagos_list:
-            return json.dumps({'status': True, 'data': pagos_list, 'message': 'Lista de citas pendientes'})
+            return json.dumps({'status': True, 'data': pagos_list, 'message': 'Lista de pagos pendientes'})
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'No hay pagos registrados'})
+        
+
+    def listar_detalle_pago_cita(self, cita_id):
+        con = db().open
+        cursor = con.cursor()
+        sql = """
+        SELECT 
+            c.id AS cita_id,
+            pago_id,
+            dp.atencion_tratamiento_id,
+            CASE 
+            WHEN dp.atencion_tratamiento_id IS NULL THEN 'Consulta'
+            ELSE (SELECT nombre FROM tratamiento WHERE id=dp.atencion_tratamiento_id)
+        END AS servicio,
+            dp.costo AS costo,
+            (SELECT estado FROM estado_cita_atencion WHERE id = dp.estado_pago_id) AS estado
+        FROM cita_atencion c
+        INNER JOIN detalle_pago dp ON c.id = dp.cita_id
+        WHERE c.id = %s
+        """
+        cursor.execute(sql, (cita_id,))
+        pagos = cursor.fetchall()
+        cursor.close()
+        con.close()
+
+        # Convertir objetos de tipo Decimal a float y date/time/timedelta a string
+        pagos_list = []
+        for pago in pagos:
+            pago_dict = dict(pago)
+            for key, value in pago_dict.items():
+                if isinstance(value, Decimal):
+                    pago_dict[key] = float(value)
+            pagos_list.append(pago_dict)
+
+        if pagos_list:
+            return json.dumps({'status': True, 'data': pagos_list, 'message': 'Lista de detalle pago por cita'})
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay pagos registrados'})
         
