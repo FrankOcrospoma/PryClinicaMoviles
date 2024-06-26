@@ -3,12 +3,14 @@ import json
 from decimal import Decimal
 
 class Tratamiento:
-    def __init__(self, id=None, nombre=None, descripcion=None, costo=None, atencion_id=None):
+    def __init__(self, id =None, nombre =None, descripcion =None, costo =None):
         self.id = id
         self.nombre = nombre
         self.descripcion = descripcion
         self.costo = costo
-        self.atencion_id = atencion_id
+
+
+
 
     def listar_tratamientos(self):
         con = db().open
@@ -36,21 +38,20 @@ class Tratamiento:
     def registrar_tratamiento(self):
         con = db().open
         cursor = con.cursor()
-        sql = "INSERT INTO tratamiento (nombre, descripcion, costo, atencion_id) VALUES (%s, %s, %s, %s);"
+        sql = "INSERT INTO tratamiento (nombre, descripcion, costo) VALUES (%s, %s, %s);"
 
         try:
             con.autocommit = False
-            cursor.execute(sql, [self.nombre, self.descripcion, self.costo, self.atencion_id])
+            cursor.execute(sql, [self.nombre, self.descripcion, self.costo])
             self.id = con.insert_id()
             con.commit()
+            return json.dumps({'status': True, 'data': {'id': self.id}, 'message': 'Tratamiento registrado correctamente'})
         except con.Error as error:
             con.rollback()
             return json.dumps({'status': False, 'data': None, 'message': str(error)})
         finally:
             cursor.close()
             con.close()
-
-        return json.dumps({'status': True, 'data': {'id': self.id}, 'message': 'Tratamiento registrado correctamente'})
 
     def actualizar_tratamiento(self):
         con = db().open
