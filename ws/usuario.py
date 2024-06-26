@@ -255,3 +255,33 @@ def restablecer_contrasena():
 
     return jsonify({'status': True, 'message': 'Contraseña restablecida'}), 200
 
+#paciente
+
+@ws_usuario.route('/usuario/agregar', methods=['POST'])
+def agregar_usuario():
+    if request.method == 'POST':
+        required_params = ['nombreUsuario', 'email', 'contrasena', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono']
+        if not all(param in request.form for param in required_params):
+            return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
+        nombre_usuario = request.form['nombreUsuario']
+        email = request.form['email']
+        contrasena = request.form['contrasena']
+        estado = 1
+        token = None
+        estado_token = None
+        nombre = request.form['nombre']
+        ape_completo = request.form['apeCompleto']
+        fecha_nac = request.form['fechaNac']
+        documento = request.form['documento']
+        tipo_documento_id = request.form['tipo_documento_id']
+        sexo = request.form['sexo']
+        direccion = request.form.get('direccion', '')
+        telefono = request.form.get('telefono', '')
+        foto = None
+        rol_id = None
+        obj = Usuario(None, nombre_usuario, email, contrasena, estado, token, estado_token, nombre, ape_completo, fecha_nac, documento, tipo_documento_id, sexo, direccion, telefono, foto, rol_id)
+        resultado_agregar = json.loads(obj.agregar())
+        if resultado_agregar['status']:
+            return jsonify(resultado_agregar), 200
+        else:
+            return jsonify(resultado_agregar), 500
