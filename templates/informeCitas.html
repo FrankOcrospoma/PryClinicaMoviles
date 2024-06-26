@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <title>Informe de Citas</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/informeCitas.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='llamaclinic.ico') }}"> <!-- Añadir favicon -->
+
 </head>
 <body>
     <header>
         <button type="submit" class="button back-button" onclick="location.href='{{ url_for('home') }}'" style="background-color:  #9BBEC8; color: black; ">Regresar</button>
         <div class="header-content">
-            <img src="{{ url_for('static', filename='llamaclinic.webp') }}" alt="Llama Clinic" class="logo">
+            <img src="{{ url_for('static', filename='llamaclinic.webp') }}" alt="Llama Clinic" class="logo" style="border-radius: 30%;">
             <h1>Informe de Citas</h1>
         </div>
     </header>
     <main>
         <form method="post" action="{{ url_for('informeCitas.consultar_informes') }}">
-            
             <div class="form-row">
                 <div class="form-group">
                     <label for="fecha_inicio">Fecha Inicio:</label>

@@ -4,12 +4,56 @@
     <meta charset="UTF-8">
     <title>Servicios Web</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/informeCitas.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .button {
+            background-color: #164863;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .button:hover {
+            background-color: #9BBEC8;
+            color: black;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-    <h1>Servicios web en ejecución</h1>
+    <h1>Reportes solicitados</h1>
     <div class="button-container">
         <a href="{{ url_for('informeCitas.consultar_informes') }}" class="button">Ir a Informe de Citas</a>
         <a href="{{ url_for('tratamientoPaciente.informe_pacientes_tratamientos') }}" class="button">Informe de Pacientes y Tratamientos</a>
     </div>
 </body>
 </html>
+
