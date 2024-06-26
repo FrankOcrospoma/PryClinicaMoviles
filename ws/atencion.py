@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.atencion import Atencion
 import json
 import validarToken as vt
+from bd import Conexion as db
 
 #Generar un modulo para gestionar el atencion al paciente
 ws_atencion = Blueprint('ws_atencion', __name__)
@@ -367,6 +368,66 @@ def actualizar_atencion2():
             return jsonify(resultadoActualizarJSONObject), 200 # OK
         else:
             return jsonify(resultadoActualizarJSONObject), 500 # Internal Server Error
+        
+@ws_atencion.route('/cita/registrar_completa', methods=['POST'])
+def registrar_completa():
+    if request.method == 'POST':
+        # Validar los parámetros de entrada
+        if 'id' not in request.form:
+            return jsonify({'status': False, 'data': None, 'message': 'Falta el parametro id'}), 400
+        
+        cita_id = request.form['id']
+        diagnostico = request.form.get('diagnostico', None)
+        anotacion = request.form.get('anotacion', None)
+        tratamientos = request.form.getlist('tratamientos')
+        recetas = request.form.getlist('recetas')
+
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            # Iniciar transacción
+            con.begin()
+
+            # Actualizar diagnóstico y anotaciones
+            sql_atencion = """
+            UPDATE cita_atencion
+            SET diagnostico = COALESCE(%s, diagnostico),
+                anotacion = COALESCE(%s, anotacion)
+            WHERE id = %s
+            """
+            cursor.execute(sql_atencion, (diagnostico, anotacion, cita_id))
+
+            # Registrar tratamientos
+            for tratamiento_id in tratamientos:
+                sql_tratamiento = """
+                INSERT INTO atencion_tratamiento (cita_id, tratamiento_id)
+                VALUES (%s, %s)
+                """
+                cursor.execute(sql_tratamiento, (cita_id, tratamiento_id))
+
+            # Registrar recetas
+            for receta in recetas:
+                medicamento = receta['medicamento']
+                dosis = receta['dosis']
+                sql_receta = """
+                INSERT INTO receta (cita_id, medicamento, dosis)
+                VALUES (%s, %s, %s)
+                """
+                cursor.execute(sql_receta, (cita_id, medicamento, dosis))
+
+            # Confirmar transacción
+            con.commit()
+            cursor.close()
+            con.close()
+            return jsonify({'status': True, 'message': 'Registro completo exitosamente'})
+
+        except Exception as e:
+            # Revertir transacción en caso de error
+            con.rollback()
+            cursor.close()
+            con.close()
+            return jsonify({'status': False, 'message': str(e)}), 500
 
 
 
