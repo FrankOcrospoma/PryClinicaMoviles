@@ -19,8 +19,7 @@ def registrar_tratamiento():
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
         costo = request.form['costo']
-        atencion_id = request.form['atencion_id']
-        obj = Tratamiento(None, nombre, descripcion, float(costo), atencion_id)
+        obj = Tratamiento(None, nombre, descripcion, float(costo))
         return jsonify(json.loads(obj.registrar_tratamiento())), 200
 
 @ws_tratamiento.route('/tratamiento/actualizar', methods=['PUT'])

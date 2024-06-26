@@ -36,11 +36,11 @@ class Tratamiento:
     def registrar_tratamiento(self):
         con = db().open
         cursor = con.cursor()
-        sql = "INSERT INTO tratamiento (nombre, descripcion, costo, atencion_id) VALUES (%s, %s, %s, %s);"
+        sql = "INSERT INTO tratamiento (nombre, descripcion, costo) VALUES (%s, %s, %s, %s);"
 
         try:
             con.autocommit = False
-            cursor.execute(sql, [self.nombre, self.descripcion, self.costo, self.atencion_id])
+            cursor.execute(sql, [self.nombre, self.descripcion, self.costo])
             self.id = con.insert_id()
             con.commit()
         except con.Error as error:
