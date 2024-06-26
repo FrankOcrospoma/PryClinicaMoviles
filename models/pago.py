@@ -202,7 +202,7 @@ class Pago:
             """
 
             sql_pago_crear = """
-            INSERT INTO pago (monto, estado_id) VALUES(%s,  (SELECT id FROM estado_cita_atencion WHERE estado = 'PENDIENTE'));
+            INSERT INTO pago (monto, estado_id) VALUES(%s,  (SELECT id FROM estado_cita_atencion WHERE estado = 'REALIZADA'));
             """
             
             
