@@ -382,6 +382,12 @@ def registrar_completa():
         tratamientos = request.form.getlist('tratamientos')
         recetas = request.form.getlist('recetas')
 
+        # Convertir las recetas de JSON string a diccionario
+        try:
+            recetas = [json.loads(receta) for receta in recetas]
+        except json.JSONDecodeError as e:
+            return jsonify({'status': False, 'message': 'Error en el formato de recetas: ' + str(e)}), 400
+
         con = db().open
         cursor = con.cursor()
 
@@ -401,8 +407,8 @@ def registrar_completa():
             # Registrar tratamientos
             for tratamiento_id in tratamientos:
                 sql_tratamiento = """
-                INSERT INTO atencion_tratamiento (cita_id, tratamiento_id,estado)
-                VALUES (%s, %s,"5")
+                INSERT INTO atencion_tratamiento (atencion_id, tratamiento_id, estado)
+                VALUES (%s, %s, '5')
                 """
                 cursor.execute(sql_tratamiento, (cita_id, tratamiento_id))
 
@@ -411,7 +417,7 @@ def registrar_completa():
                 medicamento = receta['medicamento']
                 dosis = receta['dosis']
                 sql_receta = """
-                INSERT INTO receta (cita_id, medicamento, dosis)
+                INSERT INTO receta (atencion_id, medicamento, dosis)
                 VALUES (%s, %s, %s)
                 """
                 cursor.execute(sql_receta, (cita_id, medicamento, dosis))
