@@ -370,7 +370,7 @@ class Atencion():
         
         sql = """
         select * from usuario
-        WHERE rol_id = 2;
+        WHERE rol_id = 2 and estado = 1;
         """
         
         cursor.execute(sql)
