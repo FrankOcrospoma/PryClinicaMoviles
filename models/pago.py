@@ -202,30 +202,31 @@ class Pago:
             """
             existencia_consulta = False 
             monto_total = 0 
-            for detalle_pago in data_detalle_pago:
-                if detalle_pago["servicio"].upper() == "CONSULTA":
+            pago_id = None  # Inicializar pago_id
+
+            for item in data_detalle_pago:
+                if item["servicio"].upper() == "CONSULTA":
                     existencia_consulta = True
-                    pago_id = detalle_pago["pago_id"]
+                    pago_id = item["pago_id"]
 
-                monto_total += detalle_pago["costo"]
+                monto_total += item["costo"]
 
-            if existencia_consulta:
-                cursor.execute(sql_pago_update, [monto_total, pago_id])
-                for detalle_pago in data_detalle_pago:
-                    cursor.execute(sql_detalle_pago_update, pago_id, detalle_pago["detalle_pago_id"])
+            if existencia_consulta and pago_id is not None:
+                cursor.execute(sql_pago_update, (monto_total, pago_id))
+                for item in data_detalle_pago:
+                    cursor.execute(sql_detalle_pago_update, (pago_id, item["detalle_pago_id"]))
                 
+                con.commit()
                 return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
 
-            for detalle_pago in data_detalle_pago:
-                cursor.execute(sql_detalle_pago_update, [pago_id, detalle_pago["detalle_pago_id"]])
+            for item in data_detalle_pago:
+                cursor.execute(sql_detalle_pago_update, (pago_id, item["detalle_pago_id"]))
             
-
             con.commit()
             return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
-        except con.Error as error:
+        except db.Error as error:
             con.rollback()
             return json.dumps({'status': False, 'data': None, 'message': str(error)})
         finally:
             cursor.close()
             con.close()
-
