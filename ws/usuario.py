@@ -110,6 +110,21 @@ def listar_usuarios():
     if request.method == 'GET':
         obj = Usuario()
         return jsonify(json.loads(obj.listar_usuarios())), 200
+    
+    
+@ws_usuario.route('/usuario/lista/pacientes', methods=['GET'])
+@vt.validar
+def listar_usuarios_pacientes():
+    if request.method == 'GET':
+        obj = Usuario()
+        return jsonify(json.loads(obj.listar_usuarios_pacientes())), 200
+    
+@ws_usuario.route('/usuario/lista/odontologos', methods=['GET'])
+@vt.validar
+def listar_usuarios_odontologos():
+    if request.method == 'GET':
+        obj = Usuario()
+        return jsonify(json.loads(obj.listar_usuarios_odontologos())), 200
 
 @ws_usuario.route('/usuario/subirFoto', methods=['POST'])
 @vt.validar

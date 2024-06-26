@@ -77,10 +77,10 @@ class Usuario():
             con.close()
         return json.dumps({'status': True, 'data': {'usuario_id': self.id}, 'message': "Usuario actualizado correctamente"})
 
-    def listar_usuarios(self):
+    def listar_usuarios_pacientes(self):
         con = db().open
         cursor = con.cursor()
-        sql = "SELECT id, nombre_usuario, email, nombre, ape_completo, fecha_nac, documento, sexo, direccion, telefono, foto, rol_id FROM usuario WHERE estado = '1' ORDER BY nombre_usuario;"
+        sql = "SELECT id, nombre_usuario, email, nombre, ape_completo, fecha_nac, documento, sexo, direccion, telefono, foto, rol_id FROM usuario WHERE estado = '1' and rol_id = 2 ORDER BY nombre_usuario;"
         cursor.execute(sql)
         usuarios = cursor.fetchall()
         cursor.close()
@@ -98,6 +98,28 @@ class Usuario():
             return json.dumps({'status': True, 'data': usuarios_list, 'message': 'Lista de usuarios'})
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay usuarios registrados'})
+    def listar_usuarios_odontologos(self):
+        con = db().open
+        cursor = con.cursor()
+        sql = "SELECT id, nombre_usuario, email, nombre, ape_completo, fecha_nac, documento, sexo, direccion, telefono, foto, rol_id FROM usuario WHERE estado = '1' and rol_id = 3 ORDER BY nombre_usuario;"
+        cursor.execute(sql)
+        usuarios = cursor.fetchall()
+        cursor.close()
+        con.close()
+        
+        # Convertir objetos de tipo date a string
+        usuarios_list = []
+        for usuario in usuarios:
+            usuario_dict = dict(usuario)
+            if isinstance(usuario_dict.get('fecha_nac'), date):
+                usuario_dict['fecha_nac'] = usuario_dict['fecha_nac'].strftime('%Y-%m-%d')
+            usuarios_list.append(usuario_dict)
+        
+        if usuarios_list:
+            return json.dumps({'status': True, 'data': usuarios_list, 'message': 'Lista de usuarios'})
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'No hay usuarios registrados'})
+
 
     def cambiar_contrasena(self, nueva_contrasena):
         try:
