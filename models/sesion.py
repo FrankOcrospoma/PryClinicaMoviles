@@ -43,6 +43,43 @@ class Sesion:
                 return json.dumps({'status': False, 'data': datos['nombre_usuario'], 'message': "Cuenta inactiva"})
         else: # Si no hay datos: Credenciales son incorrectas, el usuario no existe
             return json.dumps({'status': False, 'data': None, 'message': "Credenciales incorrectas"})
+    def iniciarSesionAdmin(self):
+        # Abrir la conexion
+        con = db().open
+        
+        # Crear un cursor que devuelve la consulta sql
+        cursor = con.cursor()
+        
+        # Preparar la consulta sql para validar las credenciales
+        sql = """
+            SELECT * 
+            FROM usuario
+            WHERE email = %s
+            AND contrasena = %s
+            AND rol_id = 1
+        """    
+        
+        # Ejecutar la consulta sql 
+        cursor.execute(sql, [self.email, self.clave])
+        
+        # Almacenar el resultado de la consulta
+        datos = cursor.fetchone()
+        
+        # Cerrar el cursor y la conexion
+        cursor.close()
+        con.close()
+        
+        # Retornar el resultado del método
+        if datos: # Validar si hay datos
+            print(datos)
+            if datos['estado'] == 1: # Estado '1' = activo
+                # Convertir datos a un formato serializable
+                datos_serializables = self.convertir_a_serializable(datos)
+                return json.dumps({'status': True, 'data': datos_serializables, 'message': 'Credenciales correctas'})
+            else:
+                return json.dumps({'status': False, 'data': datos['nombre_usuario'], 'message': "Cuenta inactiva"})
+        else: # Si no hay datos: Credenciales son incorrectas, el usuario no existe
+            return json.dumps({'status': False, 'data': None, 'message': "Credenciales incorrectas"})
 
     def convertir_a_serializable(self, datos):
         # Convertir objetos datetime.date a cadena
