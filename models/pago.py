@@ -200,6 +200,12 @@ class Pago:
             WHERE 
                 detalle_pago_id = %s;
             """
+
+            sql_pago_crear = """
+            INSERT INTO pago (monto, estado_id) VALUES(%s,  (SELECT id FROM estado_cita_atencion WHERE estado = 'PENDIENTE'));
+            """
+            
+            
             existencia_consulta = False 
             monto_total = 0 
             pago_id = None  # Inicializar pago_id
@@ -219,6 +225,8 @@ class Pago:
                 con.commit()
                 return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
 
+
+            cursor.execute(sql_pago_crear, (monto_total, ))
             for item in data_detalle_pago:
                 cursor.execute(sql_detalle_pago_update, (pago_id, item["detalle_pago_id"]))
             
