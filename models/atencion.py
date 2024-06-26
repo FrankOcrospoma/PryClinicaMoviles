@@ -5,17 +5,22 @@ import os
 import base64
 
 class Atencion():
-    def __init__(self, id=None, paciente_id=None, odontologo_id=None, fecha=None, hora=None, motivo_consulta=None, diagnostico=None, anotacion=None, costo=None, estado=None):
-        self.id = id
-        self.paciente_id = paciente_id
-        self.odontologo_id = odontologo_id
-        self.fecha = fecha
-        self.hora = hora
-        self.motivo_consulta = motivo_consulta
-        self.diagnostico = diagnostico
-        self.anotacion = anotacion
-        self.costo = costo
-        self.estado = estado
+    def __init__(self, id=None, paciente_id=None, odontologo_id=None, fecha=None, hora=None, motivo_consulta=None, diagnostico=None, anotacion=None, costo=None, estado=None,cita_id=None):
+        if cita_id is not None:
+            self.cita_id = cita_id
+            self.diagnostico = diagnostico
+            self.anotacion = anotacion
+        else:
+            self.id = id
+            self.paciente_id = paciente_id
+            self.odontologo_id = odontologo_id
+            self.fecha = fecha
+            self.hora = hora
+            self.motivo_consulta = motivo_consulta
+            self.diagnostico = diagnostico
+            self.anotacion = anotacion
+            self.costo = costo
+            self.estado = estado
         
     def Lista_Atencion(self):
         con = db().open
@@ -647,6 +652,28 @@ class Atencion():
             return json.dumps({'status': True, 'data': datos, 'message': 'Detalle de la cita'}, cls=CustomJsonEncoder)
         else:
             return json.dumps({'status': False, 'data': {}, 'message': 'Cita no encontrada'})
+        
+    def actualizar_cita(self):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE cita_atencion
+            SET diagnostico = COALESCE(%s, diagnostico),
+                anotacion = COALESCE(%s, anotacion)
+            WHERE id = %s
+            """
+            cursor.execute(sql, (self.diagnostico, self.anotacion, self.cita_id))
+            con.commit()
+            cursor.close()
+            con.close()
+            return json.dumps({'status': True, 'message': 'Cita actualizada exitosamente'})
+        except Exception as e:
+            con.rollback()
+            cursor.close()
+            con.close()
+            return json.dumps({'status': False, 'message': str(e)})
 
 
     
