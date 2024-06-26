@@ -563,3 +563,50 @@ class Atencion():
                 
         return json.dumps({'status': True, 'data': {'cita_id': self.id}, 'message': 'Cita cancelada correctamente'})
     
+    
+    
+    def obtener_citas_por_odontologo(self, odontologo_id):
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        sql = """
+        SELECT 
+            a.id AS cita_id,
+            CONCAT(p.nombre, ' ', p.ape_completo) AS nombre_paciente,
+            CONCAT(o.nombre, ' ', o.ape_completo) AS nombre_odontologo,
+            a.fecha,
+            a.hora,
+            a.motivo_consulta,
+            a.diagnostico,
+            a.anotacion,
+            a.costo,
+            e.estado AS estado
+        FROM cita_atencion a
+        INNER JOIN usuario p ON a.paciente_id = p.id
+        INNER JOIN usuario o ON a.odontologo_id = o.id
+        INNER JOIN estado_cita_atencion e on e.id = a.id_estado_cita
+        WHERE a.odontologo_id=%s AND (e.estado='PROGRAMADA' OR e.estado='APLAZADA')
+        ORDER BY a.fecha, a.hora;
+        """
+        
+        cursor.execute(sql, (odontologo_id,))
+        datos = cursor.fetchall()
+        
+        cursor.close()
+        con.close()
+        datos_modificados = []
+        for fila in datos:
+            hora = fila['hora']
+            formatted_time = f"{hora.seconds // 3600:02}:{(hora.seconds % 3600) // 60:02}:{hora.seconds % 60:02}"
+            fila_modificada = fila.copy()
+            fila_modificada['hora'] = formatted_time
+            datos_modificados.append(fila_modificada)
+
+        if datos_modificados:
+            return json.dumps({'status': True, 'data': datos_modificados, 'message': 'Lista de citas programadas'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+
+
+    
