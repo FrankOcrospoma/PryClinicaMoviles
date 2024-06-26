@@ -401,8 +401,8 @@ def registrar_completa():
             # Registrar tratamientos
             for tratamiento_id in tratamientos:
                 sql_tratamiento = """
-                INSERT INTO atencion_tratamiento (cita_id, tratamiento_id)
-                VALUES (%s, %s)
+                INSERT INTO atencion_tratamiento (cita_id, tratamiento_id,estado)
+                VALUES (%s, %s,"5")
                 """
                 cursor.execute(sql_tratamiento, (cita_id, tratamiento_id))
 
