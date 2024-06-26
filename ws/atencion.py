@@ -421,6 +421,14 @@ def registrar_completa():
                 VALUES (%s, %s, %s)
                 """
                 cursor.execute(sql_receta, (cita_id, medicamento, dosis))
+                
+            # Actualizar estado de la cita a '4'
+            sql_estado_cita = """
+                            UPDATE cita_atencion
+                            SET id_estado_cita = '4'
+                            WHERE id = %s
+                            """
+            cursor.execute(sql_estado_cita, (cita_id,))
 
             # Confirmar transacción
             con.commit()
