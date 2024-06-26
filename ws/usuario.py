@@ -257,10 +257,10 @@ def restablecer_contrasena():
 
 #paciente
 
-@ws_usuario.route('/usuario/agregar', methods=['POST'])
-def agregar_usuario():
+@ws_usuario.route('/usuario/agregar/paciente', methods=['POST'])
+def agregar_paciente():
     if request.method == 'POST':
-        required_params = ['nombreUsuario', 'email', 'contrasena', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono']
+        required_params = ['nombreUsuario', 'email', 'contrasena', 'estado', 'estado_token', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono']
         if not all(param in request.form for param in required_params):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
         nombre_usuario = request.form['nombreUsuario']
@@ -268,7 +268,7 @@ def agregar_usuario():
         contrasena = request.form['contrasena']
         estado = 1
         token = None
-        estado_token = None
+        estado_token = 1
         nombre = request.form['nombre']
         ape_completo = request.form['apeCompleto']
         fecha_nac = request.form['fechaNac']
