@@ -3,12 +3,12 @@ import json
 from decimal import Decimal
 
 class Tratamiento:
-    def __init__(self, id=None, nombre=None, descripcion=None, costo=None, atencion_id=None):
+    def __init__(self, id=None, nombre=None, descripcion=None, costo=None):
         self.id = id
         self.nombre = nombre
         self.descripcion = descripcion
         self.costo = costo
-        self.atencion_id = atencion_id
+
 
     def listar_tratamientos(self):
         con = db().open
