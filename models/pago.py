@@ -143,6 +143,7 @@ class Pago:
         cursor = con.cursor()
         sql = """
         SELECT 
+            dp.detalle_pago_id,
             c.id AS cita_id,
             pago_id,
             dp.atencion_tratamiento_id,
@@ -175,3 +176,24 @@ class Pago:
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay pagos registrados'})
         
+    def registrar_detalle_pago(self, detalle_pago):
+        con = db().open
+        cursor = con.cursor()
+
+        print(detalle_pago)
+        return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
+        sql = "INSERT INTO pago (monto, estado, atencion_id) VALUES (%s, %s, %s);"
+
+        try:
+            con.autocommit = False
+            cursor.execute(sql, [self.monto, self.estado, self.atencion_id])
+            self.id = con.insert_id()
+            con.commit()
+        except con.Error as error:
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'data': {'id': self.id}, 'message': 'Pago registrado correctamente'})

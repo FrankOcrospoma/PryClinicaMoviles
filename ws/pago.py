@@ -77,3 +77,17 @@ def lista_detalle_pago(cita_id):
             return jsonify(resultadoPagoJSONObject), 200 # OK
         else:
             return jsonify(resultadoPagoJSONObject), 204 
+        
+
+@ws_pago.route('/pago/detalle/registrar', methods=['POST'])
+#@vt.validar
+def registrar_detalle_pago():
+    if request.method == 'POST':
+        detalle_pago = request.form['data']
+        obj = Pago()
+
+        resultadoPagoJSONObject = json.loads(obj.registrar_detalle_pago(detalle_pago))
+        if resultadoPagoJSONObject['status']:
+            return jsonify(resultadoPagoJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoPagoJSONObject), 204 
