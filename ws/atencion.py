@@ -343,6 +343,32 @@ def obtener_detalle_cita(cita_id):
             return jsonify(resultadoCitaJSONObject), 200  # OK
         else:
             return jsonify(resultadoCitaJSONObject), 404  # Not Found
+        
+        
+@ws_atencion.route('/cita/actualizar', methods=['PUT'])
+def actualizar_atencion2():
+    if request.method == 'PUT':
+        # Validar los parámetros de entrada
+        if 'id' not in request.form:
+            return jsonify({'status': False, 'data': None, 'message': 'Falta el parametro id'}), 400
+        
+        # Leer los parámetros de entrada
+        diagnostico = request.form.get('diagnostico', None)
+        anotacion = request.form.get('anotacion', None)
+        cita_id = request.form['id']
+        
+        # Instanciar el objeto de la clase Atencion
+        obj = Atencion(cita_id=cita_id, diagnostico=diagnostico, anotacion=anotacion)
+        
+        # Ejecutar el método actualizar
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_cita())
+        
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500 # Internal Server Error
+
+
 
 
 
