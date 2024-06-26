@@ -155,7 +155,7 @@ class Pago:
             (SELECT estado FROM estado_cita_atencion WHERE id = dp.estado_pago_id) AS estado
         FROM cita_atencion c
         INNER JOIN detalle_pago dp ON c.id = dp.cita_id
-        WHERE c.id = %s
+        WHERE c.id = %s AND dp.estado_pago_id =  (SELECT id FROM estado_cita_atencion WHERE estado = 'PENDIENTE')
         """
         cursor.execute(sql, (cita_id,))
         pagos = cursor.fetchall()
