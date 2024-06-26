@@ -306,3 +306,39 @@ def agregar_paciente():
             return jsonify(resultado_agregar), 200
         else:
             return jsonify(resultado_agregar), 500
+        
+        
+@ws_usuario.route('/usuario/agregar/odontologo', methods=['POST'])
+def agregar_odontologo():
+    if request.method == 'POST':
+        required_params = ['nombreUsuario', 'email', 'contrasena', 'estado', 'nombre', 'apeCompleto', 'fechaNac', 'documento', 'tipo_documento_id', 'sexo', 'direccion', 'telefono']
+        if not all(param in request.form for param in required_params):
+            return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
+        nombre_usuario = request.form['nombreUsuario']
+        email = request.form['email']
+        contrasena = request.form['contrasena']
+        estado = 1
+        token = None
+        estado_token = 1
+        nombre = request.form['nombre']
+        ape_completo = request.form['apeCompleto']
+        fecha_nac = request.form['fechaNac']
+        documento = request.form['documento']
+        tipo_documento_id = request.form['tipo_documento_id']
+        sexo = request.form['sexo']
+        direccion = request.form.get('direccion', '')
+        telefono = request.form.get('telefono', '')
+
+        # Cifrar la contraseña en MD5
+        md5_hash = hashlib.md5()
+        md5_hash.update(contrasena.encode('utf-8'))
+        contrasena_md5 = md5_hash.hexdigest()
+
+        foto = None
+        rol_id = None
+        obj = Usuario(None, nombre_usuario, email, contrasena_md5, estado, token, estado_token, nombre, ape_completo, fecha_nac, documento, tipo_documento_id, sexo, direccion, telefono, foto, rol_id)
+        resultado_agregar = json.loads(obj.agregar_odontologo())
+        if resultado_agregar['status']:
+            return jsonify(resultado_agregar), 200
+        else:
+            return jsonify(resultado_agregar), 500
