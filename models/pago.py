@@ -99,17 +99,20 @@ class Pago:
             c.id AS cita_id, 
             c.fecha, 
             c.hora, 
-            (SELECT UPPER(CONCAT(nombre, ' ', ape_completo)) FROM usuario WHERE id= c.odontologo_id) as nombre_odontologo,
+            (SELECT UPPER(CONCAT(nombre, ' ', ape_completo)) FROM usuario WHERE id = c.odontologo_id) AS nombre_odontologo,
             c.motivo_consulta, 
-            costo
+            SUM(dp.costo) AS costo,
+            (SELECT COUNT(*) FROM detalle_pago WHERE cita_id= c.id) -1 AS cantidad_tratamiento
         FROM cita_atencion c
-            INNER JOIN pago p ON c.id=p.atencion_id
-            INNER JOIN usuario u ON u.id=c.paciente_id
-        WHERE 
-            c.id_estado_cita=(SELECT id FROM estado_cita_atencion WHERE estado = 'REALIZADA') 
-            AND p.estado_id=(SELECT id FROM estado_cita_atencion WHERE estado = 'PENDIENTE')
-            AND c.paciente_id=%s
-            ORDER BY c.fecha, c.hora;
+        INNER JOIN detalle_pago dp ON c.id = dp.cita_id
+        WHERE c.paciente_id = %s 
+        AND dp.estado_pago_id = (SELECT id FROM estado_cita_atencion WHERE estado = 'PENDIENTE')
+        GROUP BY 
+            c.id, 
+            c.fecha, 
+            c.hora, 
+            nombre_odontologo, 
+            c.motivo_consulta
         """
         cursor.execute(sql, (paciente_id,))
         pagos = cursor.fetchall()
@@ -133,3 +136,4 @@ class Pago:
             return json.dumps({'status': True, 'data': pagos_list, 'message': 'Lista de citas pendientes'})
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay pagos registrados'})
+        
