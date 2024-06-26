@@ -215,7 +215,7 @@ class Pago:
                     existencia_consulta = True
                     pago_id = item["pago_id"]
 
-                monto_total += item["costo"]
+                monto_total += float(item["costo"])
 
             if existencia_consulta and pago_id is not None:
                 cursor.execute(sql_pago_update, (monto_total, pago_id))
@@ -233,7 +233,7 @@ class Pago:
             
             con.commit()
             return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
-        except db.Error as error:
+        except con.Error as error:
             con.rollback()
             return json.dumps({'status': False, 'data': None, 'message': str(error)})
         finally:
