@@ -166,10 +166,10 @@ def obtener_citas_paciente(paciente_id):
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
 
 
-@ws_atencion.route('/atencion/cita/cancelar', methods=['POST'])
+@ws_atencion.route('/atencion/cita/cancelar', methods=['PUT'])
 #@vt.validar
 def cancelar_cita():
-    if request.method == 'POST':
+    if request.method == 'PUT':
         required_fields = ['cita_id']
         if not all(field in request.form for field in required_fields):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
@@ -195,10 +195,10 @@ def cancelar_cita():
         else:
             return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
         
-@ws_atencion.route('/atencion/cita/reprogramar', methods=['POST'])
+@ws_atencion.route('/atencion/cita/reprogramar', methods=['PUT'])
 #@vt.validar
 def reprogramar_cita():
-    if request.method == 'POST':
+    if request.method == 'PUT':
         required_fields = ['cita_id', 'fecha', 'hora']
         if not all(field in request.form for field in required_fields):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400

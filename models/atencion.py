@@ -252,8 +252,9 @@ class Atencion():
                 fecha, 
                 hora, 
                 motivo_consulta,
-                id_estado_cita
-        ) VALUES (%s, %s, %s, %s, %s, (SELECT id FROM estado_cita_atencion WHERE estado = 'PROGRAMADA'));
+                id_estado_cita,
+                costo
+        ) VALUES (%s, %s, %s, %s, %s, (SELECT id FROM estado_cita_atencion WHERE estado = 'PROGRAMADA'), 50.00);
         """
         
         try:

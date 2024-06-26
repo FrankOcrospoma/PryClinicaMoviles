@@ -1,6 +1,7 @@
 from bd import Conexion as db
 import json
 from decimal import Decimal
+from datetime import date, time, datetime, timedelta
 
 class Pago:
     def __init__(self, id=None, monto=None, estado=None, atencion_id=None):
@@ -86,3 +87,49 @@ class Pago:
             con.close()
 
         return json.dumps({'status': True, 'data': {'id': self.id}, 'message': 'Pago eliminado correctamente'})
+
+
+#APIS PARA APP PACIENTE
+
+    def listar_pagos_pendientes(self, paciente_id):
+        con = db().open
+        cursor = con.cursor()
+        sql = """
+        SELECT 
+            c.id AS cita_id, 
+            c.fecha, 
+            c.hora, 
+            (SELECT UPPER(CONCAT(nombre, ' ', ape_completo)) FROM usuario WHERE id= c.odontologo_id) as nombre_odontologo,
+            c.motivo_consulta, 
+            costo
+        FROM cita_atencion c
+            INNER JOIN pago p ON c.id=p.atencion_id
+            INNER JOIN usuario u ON u.id=c.paciente_id
+        WHERE 
+            c.id_estado_cita=(SELECT id FROM estado_cita_atencion WHERE estado = 'REALIZADA') 
+            AND p.estado_id=(SELECT id FROM estado_cita_atencion WHERE estado = 'PENDIENTE')
+            AND c.paciente_id=%s
+            ORDER BY c.fecha, c.hora;
+        """
+        cursor.execute(sql, (paciente_id,))
+        pagos = cursor.fetchall()
+        cursor.close()
+        con.close()
+
+        # Convertir objetos de tipo Decimal a float y date/time/timedelta a string
+        pagos_list = []
+        for pago in pagos:
+            pago_dict = dict(pago)
+            for key, value in pago_dict.items():
+                if isinstance(value, Decimal):
+                    pago_dict[key] = float(value)
+                elif isinstance(value, (date, time, datetime)):
+                    pago_dict[key] = value.isoformat()
+                elif isinstance(value, timedelta):
+                    pago_dict[key] = str(value)
+            pagos_list.append(pago_dict)
+
+        if pagos_list:
+            return json.dumps({'status': True, 'data': pagos_list, 'message': 'Lista de citas pendientes'})
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'No hay pagos registrados'})
