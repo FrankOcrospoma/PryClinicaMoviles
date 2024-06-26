@@ -88,3 +88,28 @@ class Tratamiento:
             con.close()
 
         return json.dumps({'status': True, 'data': {'id': self.id}, 'message': 'Tratamiento eliminado correctamente'})
+    
+    @staticmethod
+    def obtener_ids_por_nombres(nombres_tratamientos):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            format_strings = ','.join(['%s'] * len(nombres_tratamientos))
+            print("Query format strings:", format_strings)
+            cursor.execute(f"SELECT id, nombre FROM tratamiento WHERE nombre IN ({format_strings})", tuple(nombres_tratamientos))
+            resultados = cursor.fetchall()
+            
+            print("Resultados de la consulta:", resultados)
+            
+            # Convertir los resultados en un diccionario correctamente
+            tratamientos_dict = {tratamiento['nombre']: tratamiento['id'] for tratamiento in resultados}
+            
+            cursor.close()
+            con.close()
+            return {'status': True, 'data': tratamientos_dict}, 200
+        except Exception as e:
+            print("Error:", e)
+            cursor.close()
+            con.close()
+            return {'status': False, 'message': str(e)}, 500

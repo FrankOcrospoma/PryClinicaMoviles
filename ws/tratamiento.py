@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.tratamiento import Tratamiento
 import json
 import validarToken as vt
+from bd import Conexion as db
 
 ws_tratamiento = Blueprint('ws_tratamiento', __name__)
 
@@ -40,3 +41,17 @@ def eliminar_tratamiento():
         id = request.form['id']
         obj = Tratamiento(id)
         return jsonify(json.loads(obj.eliminar_tratamiento())), 200
+    
+    
+@ws_tratamiento.route('/tratamiento/obtener_ids', methods=['POST'])
+def obtener_ids_tratamientos():
+    data = request.get_json()
+
+    if not data or 'nombres' not in data:
+        return jsonify({'status': False, 'message': 'No se proporcionaron nombres de tratamientos'}), 400
+
+    nombres_tratamientos = data['nombres']
+    print("Nombres de tratamientos recibidos:", nombres_tratamientos)
+
+    result, status_code = Tratamiento.obtener_ids_por_nombres(nombres_tratamientos)
+    return jsonify(result), status_code
