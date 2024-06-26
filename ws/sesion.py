@@ -55,7 +55,7 @@ def login():
         
 
 @ws_sesion.route('/loginAdmin', methods=['POST'])    
-def login():
+def loginAdmin():
     if request.method == 'POST':
         if 'email' not in request.form or 'clave' not in request.form:
             return jsonify({'status': False, 'data': None, 'message': "Falta parámetros"}), 400
