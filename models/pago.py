@@ -227,7 +227,7 @@ class Pago:
 
 
             cursor.execute(sql_pago_crear, (monto_total, ))
-            pago_id = con.lastrowid 
+            pago_id = con.insert_id()
             for item in data_detalle_pago:
                 cursor.execute(sql_detalle_pago_update, (pago_id, item["detalle_pago_id"]))
             
