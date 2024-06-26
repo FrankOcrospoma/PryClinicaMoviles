@@ -3,7 +3,7 @@ import json
 from decimal import Decimal
 
 class Tratamiento:
-    def __init__(self, id, nombre, descripcion, costo):
+    def __init__(self, id =None, nombre =None, descripcion =None, costo =None):
         self.id = id
         self.nombre = nombre
         self.descripcion = descripcion
