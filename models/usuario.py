@@ -207,20 +207,43 @@ class Usuario():
 
 
 #paciente 
+
     def agregar_paciente(self):
         con = db().open
         cursor = con.cursor()
-        sql = "INSERT INTO usuario(estado_token, nombre_usuario, email, contrasena, estado, nombre, ape_completo, fecha_nac, documento, tipo_documento_id, sexo, direccion, telefono, rol_id) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,(SELECT id FROM rol WHERE nombre = 'paciente'))"
+
         try:
+            cursor.execute("SELECT id, nombre FROM rol WHERE nombre = 'paciente';")
+            rol = cursor.fetchone()
+            if rol is None:
+                raise Exception("Rol 'paciente' no encontrado")
+
+            rol_id = rol["id"]
+
+            sql = """
+            INSERT INTO usuario (
+                estado_token, nombre_usuario, email, contrasena, estado, nombre, ape_completo, fecha_nac, documento, tipo_documento_id, sexo, direccion, telefono, rol_id
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            )
+            """
+
             con.autocommit = False
             direccion = self.direccion if self.direccion is not None else ""
             telefono = self.telefono if self.telefono is not None else ""
-            cursor.execute(sql, [self.estado_token, self.nombre_usuario, self.email, self.contrasena, self.estado, self.nombre, self.ape_completo, self.fecha_nac, self.documento, self.tipo_documento_id, self.sexo, direccion, telefono])
+
+            cursor.execute(sql, [
+                self.estado_token, self.nombre_usuario, self.email, self.contrasena, self.estado, self.nombre, self.ape_completo,
+                self.fecha_nac, self.documento, self.tipo_documento_id, self.sexo, direccion, telefono, rol_id
+            ])
             con.commit()
-        except con.Error as error:
+            paciente_id = cursor.lastrowid
+
+            return json.dumps({'status': True, 'data': {'usuario_id': paciente_id}, 'message': "Paciente agregado correctamente"})
+        except Exception as error:
             con.rollback()
-            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+            return json.dumps({'status': False, 'data': None, 'message': f"Error: {str(error)}"})
         finally:
             cursor.close()
             con.close()
-        return json.dumps({'status': True, 'data': {'usuario_id': self.id}, 'message': "Paciente agregado correctamente"})
+

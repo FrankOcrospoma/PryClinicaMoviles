@@ -313,4 +313,36 @@ def obtener_odontologos():
             return jsonify(resultadoAtencionJSONObject), 200 # OK
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
+        
+        
+@ws_atencion.route('/atencion/citas-por-odontologo/<int:odontologo_id>', methods=['GET'])
+def obtener_citas_por_odontologo(odontologo_id):
+    if request.method == 'GET': 
+        if not odontologo_id:
+            return jsonify({'status': False, 'message': 'ID de odontólogo no válido'}), 400  # Bad Request
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtener_citas_por_odontologo(odontologo_id))
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content
+        
+
+@ws_atencion.route('/atencion/detalle-cita/<int:cita_id>', methods=['GET'])
+def obtener_detalle_cita(cita_id):
+    if request.method == 'GET':
+        if not cita_id:
+            return jsonify({'status': False, 'message': 'ID de cita no válido'}), 400  # Bad Request
+
+        obj = Atencion()
+        resultadoCitaJSONObject = json.loads(obj.obtener_cita_por_id(cita_id))
+
+        if resultadoCitaJSONObject['status']:
+            return jsonify(resultadoCitaJSONObject), 200  # OK
+        else:
+            return jsonify(resultadoCitaJSONObject), 404  # Not Found
+
+
 
