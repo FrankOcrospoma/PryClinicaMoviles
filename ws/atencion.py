@@ -3,7 +3,7 @@ from models.atencion import Atencion
 import json
 import validarToken as vt
 
-#Generar un modulo para gestionar el producto
+#Generar un modulo para gestionar el atencion al paciente
 ws_atencion = Blueprint('ws_atencion', __name__)
 
 @ws_atencion.route('/atencion/lista/', defaults={'estado': None})
@@ -25,9 +25,6 @@ def lista(estado):
             return jsonify(resultadoAtencionJSONObject), 200 # OK
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
-        
-
-        
         
 @ws_atencion.route('/atencion/registrar', methods=['POST'])
 #@vt.validar
@@ -118,7 +115,6 @@ def eliminar_atencion():
         else:
             return jsonify(resultadoEliminarJSONObject), 500  # Internal Server Error
 
-
 #APIS para paciente
 
 @ws_atencion.route('/atencion/cita/registrar', methods=['POST'])
@@ -195,6 +191,7 @@ def cancelar_cita():
         else:
             return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
         
+        
 @ws_atencion.route('/atencion/cita/reprogramar', methods=['PUT'])
 #@vt.validar
 def reprogramar_cita():
@@ -223,6 +220,7 @@ def reprogramar_cita():
             return jsonify(resultadoAgregarJSONObject), 200 # OK
         else:
             return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
+        
         
 @ws_atencion.route('/atencion/historial/<int:paciente_id>', methods=['GET'])
 #@vt.validar
@@ -271,6 +269,7 @@ def obtener_citas():
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
         
+        
 @ws_atencion.route('/atencion/citas/pacientes', methods=['GET'])
 @vt.validar
 def obtenerPacientes():
@@ -284,6 +283,7 @@ def obtenerPacientes():
             return jsonify(resultadoAtencionJSONObject), 200 # OK
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
+        
         
 @ws_atencion.route('/atencion/citas/odontologos', methods=['GET'])
 @vt.validar

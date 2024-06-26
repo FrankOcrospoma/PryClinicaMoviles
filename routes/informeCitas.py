@@ -16,8 +16,10 @@ def obtener_informes_citas(fecha_inicio, fecha_fin, paciente_id=None, odontologo
             paciente.documento AS paciente_dni,
             odontologo.nombre AS odontologo_nombre,
             odontologo.ape_completo AS odontologo_apellidos,
-            odontologo.documento AS odontologo_dni
+            odontologo.documento AS odontologo_dni,
+            estado_cita_atencion.estado
         FROM cita_atencion
+        join estado_cita_atencion on estado_cita_atencion.id=cita_atencion.id_estado_cita  
         JOIN usuario AS paciente ON cita_atencion.paciente_id = paciente.id
         JOIN usuario AS odontologo ON cita_atencion.odontologo_id = odontologo.id
         WHERE fecha BETWEEN %s AND %s

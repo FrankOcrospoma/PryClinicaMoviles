@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 # Importar a los módulos que contienen a los servicios web
 from ws.sesion import ws_sesion
-from ws.producto import ws_producto
 from ws.atencion import ws_atencion
 from ws.usuario import ws_usuario
 from ws.especialidad import ws_especialidad
@@ -17,7 +16,6 @@ app = Flask(__name__)
 
 # Registrar los módulos que contienen a los servicios web
 app.register_blueprint(ws_sesion)   
-app.register_blueprint(ws_producto)
 app.register_blueprint(ws_atencion)
 app.register_blueprint(ws_usuario)
 app.register_blueprint(ws_especialidad)

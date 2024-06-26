@@ -4,32 +4,40 @@
     <meta charset="UTF-8">
     <title>Informe de Pacientes y Tratamientos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/informeCitas.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='llamaclinic.ico') }}">
 </head>
 <body>
-    <h1>Informe de Pacientes y Tratamientos</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID Paciente</th>
-                <th>Nombre del Paciente</th>
-                <th>ID Tratamiento</th>
-                <th>Nombre del Tratamiento</th>
-                <th>Descripción del Tratamiento</th>
-                <th>Costo del Tratamiento</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for registro in informe %}
-            <tr>
-                <td>{{ registro.paciente_id }}</td>
-                <td>{{ registro.nombre_paciente }}</td>
-                <td>{{ registro.tratamiento_id }}</td>
-                <td>{{ registro.nombre_tratamiento }}</td>
-                <td>{{ registro.descripcion_tratamiento }}</td>
-                <td>{{ registro.costo_tratamiento }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <header>
+        <button type="submit" class="button back-button" onclick="location.href='{{ url_for('home') }}'" style="background-color:  #9BBEC8; color: black; ">Regresar</button>
+        <div class="header-content">
+            <img src="{{ url_for('static', filename='llamaclinic.webp') }}" alt="Llama Clinic" class="logo" style="border-radius: 30%;">
+            <h1>Informe de Pacientes y Tratamientos</h1>
+        </div>
+    </header>
+    <main>
+        <div class="table-container">
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre del Paciente</th>
+                        <th>Nombre del Tratamiento</th>
+                        <th>Descripción del Tratamiento</th>
+                        <th>Costo del Tratamiento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in informe %}
+                    <tr>
+                        <td>{{ registro.nombre_paciente }}</td>
+                        <td>{{ registro.nombre_tratamiento }}</td>
+                        <td>{{ registro.descripcion_tratamiento }}</td>
+                        <td>{{ registro.costo_tratamiento }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
 </body>
 </html>
