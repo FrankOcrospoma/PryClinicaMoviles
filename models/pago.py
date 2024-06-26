@@ -177,18 +177,51 @@ class Pago:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay pagos registrados'})
         
     def registrar_detalle_pago(self, detalle_pago):
-        con = db().open
-        cursor = con.cursor()
-
-        print(detalle_pago)
-        return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
-        sql = "INSERT INTO pago (monto, estado, atencion_id) VALUES (%s, %s, %s);"
-
         try:
+            con = db().open
+            cursor = con.cursor()
+            data_detalle_pago = json.loads(detalle_pago)
+
             con.autocommit = False
-            cursor.execute(sql, [self.monto, self.estado, self.atencion_id])
-            self.id = con.insert_id()
-            con.commit()
+
+            sql_pago_update = """
+            UPDATE pago 
+            SET 
+                monto = %s, 
+                estado_id = (SELECT id FROM estado_cita_atencion WHERE estado = 'REALIZADA') 
+            WHERE 
+                id = %s;
+            """
+            sql_detalle_pago_update = """
+            UPDATE detalle_pago
+            SET
+                estado_pago_id = (SELECT id FROM estado_cita_atencion WHERE estado = 'REALIZADA'),
+                pago_id = %s
+            WHERE 
+                detalle_pago_id = %s;
+            """
+            existencia_consulta = False 
+            monto_total = 0 
+            for detalle_pago in data_detalle_pago:
+                if detalle_pago["servicio"].upper() == "CONSULTA":
+                    existencia_consulta = True
+                    pago_id = detalle_pago["pago_id"]
+
+                monto_total += detalle_pago["costo"]
+
+            if existencia_consulta:
+                cursor.execute(sql_pago_update, monto_total, pago_id)
+                for detalle_pago in data_detalle_pago:
+                    cursor.execute(sql_detalle_pago_update, pago_id, detalle_pago["detalle_pago_id"])
+                
+                return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
+
+            for detalle_pago in data_detalle_pago:
+                cursor.execute(sql_detalle_pago_update, pago_id, detalle_pago["detalle_pago_id"])
+            
+                con.autocommit = False
+
+            return json.dumps({'status': True, 'data': None, 'message': 'Pago registrado correctamente'})
         except con.Error as error:
             con.rollback()
             return json.dumps({'status': False, 'data': None, 'message': str(error)})
@@ -196,4 +229,3 @@ class Pago:
             cursor.close()
             con.close()
 
-        return json.dumps({'status': True, 'data': {'id': self.id}, 'message': 'Pago registrado correctamente'})
