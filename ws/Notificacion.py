@@ -30,7 +30,7 @@ def registrar_notificacion():
 
 
 
-@ws_pago.route('/notificacion/pendientes/<int:paciente_id>', methods=['GET'])
+@ws_pago.route('/notificacion/paciente/<int:paciente_id>', methods=['GET'])
 #@vt.validar
 def lista_pagos_pendientes(paciente_id):
     if request.method == 'GET':
