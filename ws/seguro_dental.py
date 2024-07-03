@@ -67,7 +67,7 @@ def eliminar_seguro_dental():
     if 'id' not in request.args:
       return jsonify({'status': False, 'data': None, 'message': 'Falta el ID del seguro dental'}), 400
 
-    id = request.args.get['id']
+    id = request.args.get('id')
 
     obj = SeguroDental(id)
 
