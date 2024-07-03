@@ -342,3 +342,15 @@ def agregar_odontologo():
             return jsonify(resultado_agregar), 200
         else:
             return jsonify(resultado_agregar), 500
+        
+
+@ws_usuario.route('/usuario/paciente/historial/<int:paciente_id>', methods=['GET'])
+#@vt.validar
+def historial_usuario_paciente(paciente_id):
+    if request.method == 'GET':
+        if not paciente_id:
+            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400  # Bad Request
+
+        obj = Usuario()
+        return jsonify(json.loads(obj.listar_usuarios_pacientes())), 200
+    
