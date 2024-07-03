@@ -206,7 +206,7 @@ class Atencion():
                 cursor.close()
                 con.close()
                 
-            return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atención actualizada correctamente'})
+            return json.dumps({'status': True, 'data': {'atencion_id': self.id}, 'message': 'Atención eliminada correctamente'})
         
     def eliminar_atencion(self):
         # Abrir la conexión
