@@ -39,7 +39,7 @@ def lista_pagos_pendientes(paciente_id):
 
         obj = Notificacion()
 
-        resultadoPagoJSONObject = json.loads(obj.listar_pagos_pendientes(paciente_id))
+        resultadoPagoJSONObject = json.loads(obj.listar_notificacion_paciente(paciente_id))
 
         if resultadoPagoJSONObject['status']:
             return jsonify(resultadoPagoJSONObject), 200 # OK
