@@ -10,6 +10,7 @@ from ws.rol import ws_rol
 from ws.seguro_dental import ws_seguro_dental
 from ws.atencion_tratamiento import ws_atencion_tratamiento
 from ws.receta import ws_receta
+from ws.Notificacion import ws_notificacion
 from routes.informeCitas import main as informeCitas_bp  # Importar el blueprint de informeCitas
 from routes.tratamientoPaciente import main as tratamientoPaciente_bp
 
@@ -29,6 +30,7 @@ app.register_blueprint(ws_atencion_tratamiento)
 app.register_blueprint(ws_receta)
 app.register_blueprint(informeCitas_bp)  # Registrar el blueprint de informeCitas
 app.register_blueprint(tratamientoPaciente_bp)
+app.register_blueprint(ws_notificacion)
 
 @app.route('/')
 def home():
