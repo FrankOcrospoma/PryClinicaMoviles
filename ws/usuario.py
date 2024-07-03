@@ -354,3 +354,30 @@ def historial_usuario_paciente(paciente_id):
         obj = Usuario()
         return jsonify(json.loads(obj.listar_usuarios_pacientes())), 200
     
+@ws_usuario.route('/usuario/notificar/paciente', methods=['POST'])
+def notificar():
+    if request.method == 'POST':
+        data = {}
+        data["paciente_id"] = request.form.get('paciente_id')
+        data["mensaje"] = request.form.get('mensaje')
+        data["leida"] = 0
+
+        obj = Usuario()
+
+        resultado = json.loads(obj.notificar_paciente(data))
+
+        if resultado["status"]:
+            return jsonify(resultado), 200
+
+        return jsonify(resultado), 400
+    
+
+@ws_usuario.route('/usuario/paciente/notificaciones/<int:paciente_id>', methods=['GET'])
+#@vt.validar
+def notificaciones_paciente(paciente_id):
+    if request.method == 'GET':
+        if not paciente_id:
+            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400  # Bad Request
+
+        obj = Usuario()
+        return jsonify(json.loads(obj.lista_notificaciones_paciente(paciente_id))), 200

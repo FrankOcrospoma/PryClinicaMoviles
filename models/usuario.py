@@ -288,3 +288,65 @@ class Usuario():
             con.close()
 
 
+    def notificar_paciente(self, data):
+        con = db().open
+        cursor = con.cursor()
+        try:
+
+            sql = """
+            INSERT INTO notificacion (
+                usuario_id, mensaje, fecha, leida
+            ) VALUES (
+                %s, %s, (SELECT CONCAT(CURRENT_DATE, ' ', CURRENT_TIME) AS fecha), %s
+            )
+            """
+
+            con.autocommit = False
+
+            cursor.execute(sql, [data["paciente_id"], data["mensaje"], data["leida"]])
+            con.commit()
+
+            return json.dumps({'status': True, 'data': None, 'message': "Notificacion  agregado correctamente"})
+        except Exception as error:
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': f"Error: {str(error)}"})
+        finally:
+            cursor.close()
+            con.close()
+
+
+    def lista_notificaciones_paciente(self, paciente_id):
+        con = db().open
+        cursor = con.cursor()
+        try:
+            sql = """
+            SELECT 
+                n.id AS notificacion_id, 
+                n.mensaje, 
+                n.fecha, 
+                case n.leida
+                    when 0 then 'No leido'
+                    else 'Leido'
+                END AS estado
+            FROM notificacion n
+            INNER JOIN usuario u ON u.id=n.usuario_id
+            WHERE u.id = %s
+            """
+            cursor.execute(sql, [paciente_id])
+
+            data = cursor.fetchall()
+
+
+            for x in data:
+                fecha = str(x["fecha"])
+                print(fecha)
+                x['fecha'] = fecha
+
+
+            return json.dumps({'status': True, 'data': data, 'message': "Listado de Notificacion correctamente"})
+        except Exception as error:
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': f"Error: {str(error)}"})
+        finally:
+            cursor.close()
+            con.close()
