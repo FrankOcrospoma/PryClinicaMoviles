@@ -13,29 +13,29 @@ def registrar_notificacion():
         if not all(field in request.form for field in required_fields):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
 
-        # Leer los parámetros de entrada
+
         cita_id = request.form['cita_id']
         mensaje = request.form['mensaje']
 
-        # Instanciar el objeto de la clase Notificacion
+
         obj = Notificacion(cita_id, mensaje)
         
         # Ejecutar el método registrar
         resultadoAgregarJSONObject = json.loads(obj.registrar(cita_id))
         
         if resultadoAgregarJSONObject['status'] == True:
-            return jsonify(resultadoAgregarJSONObject), 200 # OK
+            return jsonify(resultadoAgregarJSONObject), 200 
         else:
-            return jsonify(resultadoAgregarJSONObject), 500 # Internal Server Error
+            return jsonify(resultadoAgregarJSONObject), 500 
 
 
 
-@ws_pago.route('/notificacion/paciente/<int:paciente_id>', methods=['GET'])
+@ws_notificacion.route('/notificacion/paciente/<int:paciente_id>', methods=['GET'])
 #@vt.validar
-def lista_pagos_pendientes(paciente_id):
+def listar_notificacion_paciente(paciente_id):
     if request.method == 'GET':
         if not paciente_id:
-            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400  # Bad Request
+            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400 
 
         obj = Notificacion()
 
