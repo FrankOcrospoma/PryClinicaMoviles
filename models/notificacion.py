@@ -60,3 +60,20 @@ class Notificacion:
             con.close()
             
         return json.dumps({'status': True, 'data': {'notificacion_id': self.id}, 'message': 'Notificación registrada correctamente'})
+
+
+    def listar_notificacion_paciente(self, paciente_id):
+        con = db().open
+        cursor = con.cursor()
+        sql = """
+            SELECT * FROM notificacion WHERE usuario_id= %s 
+        """
+        cursor.execute(sql, (paciente_id,))
+        notificaciones = cursor.fetchall()
+        cursor.close()
+        con.close()
+   
+        if notificaciones:
+            return json.dumps({'status': True, 'data': notificaciones, 'message': 'Lista de notificaciones'})
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'No hay notificaciones registradas'})
