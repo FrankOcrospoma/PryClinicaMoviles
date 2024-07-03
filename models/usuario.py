@@ -286,3 +286,5 @@ class Usuario():
         finally:
             cursor.close()
             con.close()
+
+

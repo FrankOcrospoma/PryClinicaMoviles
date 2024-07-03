@@ -513,6 +513,61 @@ class Atencion():
             return json.dumps({'status': True, 'data': detalle_historial, 'message': 'Detalle historial médico'}, cls=CustomJsonEncoder)
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
+        
+    def obtener_detalle_historial_por_paciente2(self, cita_id):
+        con = db().open
+        
+        cursor = con.cursor() 
+        
+        detalle_historial = {}
+        
+         # Obtener el paciente_id basado en la cita_id
+        cursor.execute("SELECT paciente_id FROM cita_atencion WHERE id = %s", (cita_id,))
+        paciente_id_result = cursor.fetchone()
+
+        if not paciente_id_result:
+            cursor.close()
+            con.close()
+            return json.dumps({'status': False, 'message': 'Cita no encontrada con id: {}'.format(cita_id)})
+
+        paciente_id = paciente_id_result['paciente_id']
+        
+        sql_tratamiento = """
+        SELECT
+            t.nombre AS tratamiento, 
+            t.descripcion AS descripcion_tratamiento, 
+            t.costo AS costo_tratamiento,
+            c.fecha
+        FROM cita_atencion c
+        INNER JOIN atencion_tratamiento a ON a.atencion_id = c.id
+        INNER JOIN tratamiento t ON a.tratamiento_id = t.id
+        INNER JOIN usuario u ON u.id = c.paciente_id
+        WHERE u.id = %s;
+        """
+        sql_receta = """SELECT receta.id AS receta_id, receta.medicamento, receta.dosis,c.fecha FROM receta INNER JOIN cita_atencion c ON receta.atencion_id=c.id INNER JOIN usuario u ON u.id = c.paciente_id
+        wHERE u.id = %s;
+        """
+        
+        
+        cursor.execute(sql_tratamiento, paciente_id)
+        datos_tratamiento = cursor.fetchall()
+        
+        detalle_historial["tratamientos"] = datos_tratamiento
+
+        cursor.execute(sql_receta, paciente_id)
+        datos_receta= cursor.fetchall()
+
+        detalle_historial["recetas"] = datos_receta
+
+        
+
+        cursor.close()
+        con.close()
+
+        if detalle_historial:
+            return json.dumps({'status': True, 'data': detalle_historial, 'message': 'Detalle historial médico'}, cls=CustomJsonEncoder)
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'Sin registros'})
      
 
     def obtener_odontologos(self):

@@ -7,7 +7,7 @@ import validarToken as vt
 ws_seguro_dental = Blueprint('ws_seguro_dental', __name__)
 
 @ws_seguro_dental.route('/seguro-dental/<int:id>', methods=['GET'])
-@vt.validar
+#@vt.validar
 def obtener_seguro_dental(id):
   if request.method == 'GET':
 
@@ -20,7 +20,7 @@ def obtener_seguro_dental(id):
       return jsonify(resultado_obtener_seguro), 200 #ok
     
 @ws_seguro_dental.route('/seguro-dental/agregar', methods=['POST'])
-@vt.validar
+#@vt.validar
 def agregar_seguro_dental():
   if request.method == 'POST':
     if {'nombre_compania', 'tipo_cobertura', 'telefono_compania', 'paciente_id'} - set(request.form.keys()):
@@ -40,7 +40,7 @@ def agregar_seguro_dental():
       return jsonify(resultado_agregar_seguro), 200 #ok   
 
 @ws_seguro_dental.route('/seguro-dental/actualizar', methods=['PUT'])
-@vt.validar
+#@vt.validar
 def actualizar_seguro_dental():
   if request.method == 'PUT':
     if {'id', 'nombre_compania', 'tipo_cobertura', 'telefono_compania'} - set(request.form.keys()):
@@ -61,13 +61,13 @@ def actualizar_seguro_dental():
       return jsonify(resultado_actualizar_seguro), 200 #ok
 
 @ws_seguro_dental.route('/seguro-dental/eliminar', methods=['DELETE'])
-@vt.validar
+#@vt.validar
 def eliminar_seguro_dental():
   if request.method == 'DELETE':
-    if 'id' not in request.form:
+    if 'id' not in request.args:
       return jsonify({'status': False, 'data': None, 'message': 'Falta el ID del seguro dental'}), 400
 
-    id = request.form['id']
+    id = request.args.get('id')
 
     obj = SeguroDental(id)
 

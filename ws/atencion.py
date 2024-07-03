@@ -254,6 +254,22 @@ def obtener_detalle_historial_paciente(cita_id):
             return jsonify(resultadoAtencionJSONObject), 200 # OK
         else:
             return jsonify(resultadoAtencionJSONObject), 204 # No Content
+
+@ws_atencion.route('/atencion/detalle-historial2/<int:cita_id>', methods=['GET'])
+#@vt.validar
+def obtener_detalle_historial_paciente2(cita_id):
+    if request.method == 'GET': 
+        if not cita_id:
+            return jsonify({'status': False, 'message': 'ID de cita no válido'}), 400  # Bad Request
+
+        obj = Atencion()
+        resultadoAtencionJSONObject = json.loads(obj.obtener_detalle_historial_por_paciente2(cita_id))
+
+
+        if resultadoAtencionJSONObject['status']:
+            return jsonify(resultadoAtencionJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoAtencionJSONObject), 204 # No Content
               
     
 @ws_atencion.route('/atencion/citas/', methods=['GET'])

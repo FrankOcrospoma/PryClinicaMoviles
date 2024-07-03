@@ -13,7 +13,7 @@ class SeguroDental:
     con = db().open
     cursor = con.cursor()
 
-    sql = "SELECT * FROM seguro_dental WHERE paciente_id = %s"
+    sql = "SELECT id AS seguro_dental_id, nombre_compania, tipo_cobertura, telefono_compania FROM seguro_dental WHERE paciente_id = %s"
     try:
       cursor.execute(sql, [paciente_id])
       data = cursor.fetchall()
@@ -22,7 +22,7 @@ class SeguroDental:
       if data:
         return json.dumps({'status': True, 'data': data, 'message': 'Seguro dental de paciente'})
       else:
-        return json.dumps({'status': False, 'data': None, 'message': 'Sin registros'})
+        return json.dumps({'status': False, 'data': None, 'message': 'Sin registros de seguro dental'})
     except con.Error as error:
       con.rollback()
       return json.dumps({'status': False, 'data': None, 'message': str(error)})
