@@ -13,11 +13,11 @@ def registrar_notificacion():
         if not all(field in request.form for field in required_fields):
             return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
 
-        # Leer los parámetros de entrada
+
         cita_id = request.form['cita_id']
         mensaje = request.form['mensaje']
 
-        # Instanciar el objeto de la clase Notificacion
+
         obj = Notificacion(cita_id, mensaje)
         
         # Ejecutar el método registrar
