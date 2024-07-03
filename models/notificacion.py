@@ -9,12 +9,23 @@ class Notificacion:
         self.usuario_id = usuario_id
         self.mensaje = mensaje
 
-    def registrar(self):
+    def registrar(self, cita_id):
         # Abrir la conexión
         con = db().open
         
         # Crear un cursor que devuelve la consulta sql
         cursor = con.cursor()
+        
+        # Obtener el paciente_id basado en la cita_id
+        cursor.execute("SELECT paciente_id FROM cita_atencion WHERE id = %s", (cita_id,))
+        paciente_id_result = cursor.fetchone()
+
+        if not paciente_id_result:
+            cursor.close()
+            con.close()
+            return json.dumps({'status': False, 'message': 'Cita no encontrada con id: {}'.format(cita_id)})
+
+        paciente_id = paciente_id_result['paciente_id']
         
         # Preparar la sentencia de inserción
         sql = """
@@ -32,7 +43,7 @@ class Notificacion:
             con.autocommit = False
             
             # Ejecutar la sentencia
-            cursor.execute(sql, [self.usuario_id, self.mensaje, datetime.now(), 0])
+            cursor.execute(sql, [paciente_id, self.mensaje, datetime.now(), 0])
             self.id = cursor.lastrowid
             
             # Confirmar la operación de agregar

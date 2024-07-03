@@ -521,7 +521,7 @@ class Atencion():
         
         detalle_historial = {}
         
-         # Obtener el paciente_id basado en la cita_id
+        # Obtener el paciente_id basado en la cita_id
         cursor.execute("SELECT paciente_id FROM cita_atencion WHERE id = %s", (cita_id,))
         paciente_id_result = cursor.fetchone()
 
