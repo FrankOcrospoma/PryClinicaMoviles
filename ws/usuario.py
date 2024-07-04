@@ -434,7 +434,7 @@ def actualizar_estado_notificacion():
             return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
 
         obj = Usuario()
-        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_notificacion(usuario_id, estado))
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_notificacion_geancarlos(usuario_id, estado))
 
         if resultadoActualizarJSONObject['status']:
             return jsonify(resultadoActualizarJSONObject), 200
