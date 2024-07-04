@@ -124,5 +124,29 @@ def actualizar_estado_notificacion():
             return jsonify(resultadoActualizarJSONObject), 200
         else:
             return jsonify(resultadoActualizarJSONObject), 500
+        
+    @ws_notificacion.route('/notificacion/registrar2', methods=['POST'])
+    #@vt.validar
+    def registrar_notificacion2():
+        if request.method == 'POST':
+            # Validar los parámetros de entrada necesarios para registrar una notificación
+            required_fields = ['cita_id', 'mensaje']
+            if not all(field in request.form for field in required_fields):
+                return jsonify({'status': False, 'data': None, 'message': 'Faltan parámetros'}), 400
+
+
+            cita_id = request.form['cita_id']
+            mensaje = request.form['mensaje']
+
+
+            obj = Notificacion(cita_id, mensaje)
+            
+            # Ejecutar el método registrar
+            resultadoAgregarJSONObject = json.loads(obj.registrarConVali(cita_id))
+            
+            if resultadoAgregarJSONObject['status'] == True:
+                return jsonify(resultadoAgregarJSONObject), 200 
+            else:
+                return jsonify(resultadoAgregarJSONObject), 500 
 
         
