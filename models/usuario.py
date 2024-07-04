@@ -467,7 +467,26 @@ class Usuario():
 
 
 
+    def actualizar_estado_noti_guzman(self, usuario_id, estado):
+        con = db.open
+        cursor = con.cursor()
 
+        try:
+            sql = """
+            UPDATE usuario SET notificacion = %s WHERE id = %s
+            """
+            cursor.execute(sql, (estado, usuario_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
 
 
 
