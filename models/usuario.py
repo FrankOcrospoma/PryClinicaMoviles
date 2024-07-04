@@ -399,7 +399,7 @@ class Usuario():
         finally:
             cursor.close()
             con.close()
-            con.close()
+
     def actualizar_estado_notificacion_geancarlos(self, usuario_id, estado):
         con = db().open
         cursor = con.cursor()
