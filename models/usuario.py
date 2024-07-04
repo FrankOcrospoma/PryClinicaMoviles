@@ -349,8 +349,12 @@ class Usuario():
             cursor.execute(sql_paciente, (data["paciente_id"], ))
             usario_estado_noti = cursor.fetchall()
             
-            if usario_estado_noti == 1:
-                
+            numero = 0
+            for usu in usario_estado_noti:
+                print (usu.get('notificacion'))
+                numero = usu.get('notificacion')
+            if numero == 1:
+            
 
                 sql = """
                 INSERT INTO notificacion (
@@ -367,7 +371,7 @@ class Usuario():
 
                 return json.dumps({'status': True, 'data': None, 'message': "Notificacion  agregado correctamente"})
             else:
-                return json.dumps({'status': True, 'data': None, 'message': "El usuario no desea recibir notificaciones"})
+                return json.dumps({'status': True, 'data': None, 'message': "El usuario no desea recibir notificaciones",  })
                 
         except Exception as error:
             con.rollback()
