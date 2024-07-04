@@ -505,7 +505,6 @@ class Atencion():
         datos_receta= cursor.fetchall()
 
         detalle_historial["recetas"] = datos_receta
-
         cursor.close()
         con.close()
 
