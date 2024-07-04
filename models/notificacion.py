@@ -122,8 +122,7 @@ class Notificacion:
 
         sql = "UPDATE notificacion SET leida = %s WHERE id = %s"
         try:
-            con.autocommit = False
-            cursor.execute(sql, [leida, notificacion_id])
+            cursor.execute(sql, (leida, notificacion_id))
             
             con.commit()
             return json.dumps({'status': True, 'data': {'notificacion_id': notificacion_id}, 'message': 'Notificación actualizado correctamente'})
