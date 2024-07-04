@@ -379,7 +379,7 @@ class Usuario():
                 END AS estado
             FROM notificacion n
             INNER JOIN usuario u ON u.id=n.usuario_id
-            WHERE u.id = %s
+            WHERE u.id = %s AND u.notificacion = 1
             """
             cursor.execute(sql, [paciente_id])
 
