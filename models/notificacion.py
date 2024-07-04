@@ -70,7 +70,7 @@ class Notificacion:
         sql = """
             SELECT * FROM notificacion
             WHERE usuario_id = %s
-            ORDER BY leida ASC, fecha DESC
+            ORDER BY  fecha DESC
         """
         cursor.execute(sql, (paciente_id,))
         notificaciones = cursor.fetchall()
