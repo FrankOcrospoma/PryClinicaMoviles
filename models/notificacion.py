@@ -29,6 +29,7 @@ class Notificacion:
 
         paciente_id = paciente_id_result['paciente_id']
         
+
         # Preparar la sentencia de inserción
         sql = """
         INSERT INTO notificacion (

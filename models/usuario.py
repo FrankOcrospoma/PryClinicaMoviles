@@ -341,21 +341,34 @@ class Usuario():
         con = db().open
         cursor = con.cursor()
         try:
-
-            sql = """
-            INSERT INTO notificacion (
-                usuario_id, mensaje, fecha, leida
-            ) VALUES (
-                %s, %s, %s, %s
-            )
+            
+            sql_paciente = """
+                SELECT notificacion FROM usuario
+                WHERE id = %s
             """
+            cursor.execute(sql, (sql_paciente,))
+            usario_estado_noti = cursor.fetchall()
+            
+            if usario_estado_noti == 1:
+                
 
-            con.autocommit = False
+                sql = """
+                INSERT INTO notificacion (
+                    usuario_id, mensaje, fecha, leida
+                ) VALUES (
+                    %s, %s, %s, %s
+                )
+                """
 
-            cursor.execute(sql, [data["paciente_id"], data["mensaje"], datetime.now(), data["leida"]])
-            con.commit()
+                con.autocommit = False
 
-            return json.dumps({'status': True, 'data': None, 'message': "Notificacion  agregado correctamente"})
+                cursor.execute(sql, [data["paciente_id"], data["mensaje"], datetime.now(), data["leida"]])
+                con.commit()
+
+                return json.dumps({'status': True, 'data': None, 'message': "Notificacion  agregado correctamente"})
+            else:
+                return json.dumps({'status': True, 'data': None, 'message': "El usuario no desea recibir notificaciones"})
+                
         except Exception as error:
             con.rollback()
             return json.dumps({'status': False, 'data': None, 'message': f"Error: {str(error)}"})
