@@ -346,7 +346,7 @@ class Usuario():
                 SELECT notificacion FROM usuario
                 WHERE id = %s
             """
-            cursor.execute(sql, (sql_paciente,))
+            cursor.execute(sql_paciente, (data["paciente_id"], ))
             usario_estado_noti = cursor.fetchall()
             
             if usario_estado_noti == 1:
