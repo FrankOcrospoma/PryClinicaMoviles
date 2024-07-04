@@ -125,7 +125,7 @@ class Notificacion:
             cursor.execute(sql, (leida, notificacion_id))
             
             con.commit()
-            return json.dumps({'status': True, 'data': {'notificacion_id': notificacion_id}, 'message': 'Notificación actualizado correctamente'})
+            return json.dumps({'status': True, 'data': {'notificacion_id': notificacion_id, 'leida': leida}, 'message': 'Notificación actualizado correctamente'})
         except con.Error as error:
             con.rollback()
             return json.dumps({'status': False, 'data': None, 'message': str(error)})
