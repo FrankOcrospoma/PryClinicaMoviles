@@ -446,7 +446,24 @@ class Usuario():
         return json.dumps({'status': True, 'message': 'Estado de la notificación del usuario actualizado correctamente'})
 
 
+    def cambiar_estado_notificacion_por_paciente(self, paciente_id, notificacion):
+        con = db().open
+        cursor = con.cursor()
 
+        try:
+            sql = """
+            UPDATE usuario SET notificacion=%s WHERE id = %s;
+                        """
+            cursor.execute(sql, (notificacion, paciente_id))
+            
+            con.commit()
+            return json.dumps({'status': True, 'data': {'paciente_id': paciente_id}, 'message': 'Notificación actualizado correctamente'})
+        except con.Error as error:
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+        finally:
+            cursor.close()
+            con.close()
 
 
 

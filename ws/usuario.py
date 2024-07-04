@@ -440,3 +440,23 @@ def actualizar_estado_notificacion():
             return jsonify(resultadoActualizarJSONObject), 200
         else:
             return jsonify(resultadoActualizarJSONObject), 500
+        
+
+
+#edu
+@ws_usuario.route('/notificacion/paciente/estado', methods=['PUT'])
+def cambiar_estado_notificacion_por_paciente():
+    if request.method == 'PUT':
+        paciente_id = request.form['paciente_id']        
+        notificacion = request.form['notificacion']
+
+
+        obj = Usuario()
+
+        resultado = json.loads(obj.cambiar_estado_notificacion_por_paciente(paciente_id, notificacion))
+
+        if resultado['status']:
+            return jsonify(resultado), 200
+        
+        return jsonify(resultado), 500
+    
