@@ -69,9 +69,9 @@ def cambiar_estado_notificacion():
         notificacion_id = request.form['notificacion_id']        
         leida = request.form['leida']
 
-        leida_valor = 0
+        leida_valor = 1
         if leida.upper() == 'LEÍDO':
-            leida_valor = 1
+            leida_valor = 0
 
         if not notificacion_id or not leida:
             return jsonify({'status': False, 'message': 'ID de notificación no válido'}), 400
