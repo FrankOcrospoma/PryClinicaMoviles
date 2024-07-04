@@ -68,7 +68,9 @@ class Notificacion:
         con = db().open
         cursor = con.cursor()
         sql = """
-            SELECT * FROM notificacion WHERE usuario_id= %s 
+            SELECT * FROM notificacion
+            WHERE usuario_id = %s
+            ORDER BY leida ASC, fecha DESC
         """
         cursor.execute(sql, (paciente_id,))
         notificaciones = cursor.fetchall()
