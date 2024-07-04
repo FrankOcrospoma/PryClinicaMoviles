@@ -46,6 +46,22 @@ def listar_notificacion_paciente(paciente_id):
         else:
             return jsonify(resultadoPagoJSONObject), 204 
         
+@ws_notificacion.route('/notificacion/paciente2/<int:paciente_id>', methods=['GET'])
+#@vt.validar
+def listar_notificacion_paciente2(paciente_id):
+    if request.method == 'GET':
+        if not paciente_id:
+            return jsonify({'status': False, 'message': 'ID de paciente no válido'}), 400 
+
+        obj = Notificacion()
+
+        resultadoPagoJSONObject = json.loads(obj.listar_notificacion_paciente2(paciente_id))
+
+        if resultadoPagoJSONObject['status']:
+            return jsonify(resultadoPagoJSONObject), 200 # OK
+        else:
+            return jsonify(resultadoPagoJSONObject), 204 
+        
 #xdd
 @ws_notificacion.route('/notificacion/paciente', methods=['PUT'])
 def cambiar_estado_notifiacion():
