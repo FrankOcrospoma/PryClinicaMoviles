@@ -326,8 +326,8 @@ class Usuario():
                 n.mensaje, 
                 n.fecha, 
                 case n.leida
-                    when 0 then 'No leido'
-                    else 'Leido'
+                    when 0 then 'No leído'
+                    else 'Leído'
                 END AS estado
             FROM notificacion n
             INNER JOIN usuario u ON u.id=n.usuario_id

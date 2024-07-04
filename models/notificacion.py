@@ -86,3 +86,22 @@ class Notificacion:
             return json.dumps({'status': True, 'data': notificaciones_list, 'message': 'Lista de notificaciones'})
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay notificaciones registradas'})
+        
+
+    def actualizar_notificacion_paciente(self, notificacion_id, leida):
+        con = db().open
+        cursor = con.cursor()
+
+        sql = "UPDATE notificacion SET leida = %s WHERE id = %s"
+        try:
+            con.autocommit = False
+            cursor.execute(sql, [leida, notificacion_id])
+            
+            con.commit()
+            return json.dumps({'status': True, 'data': {'notificacion_id': notificacion_id}, 'message': 'Notificación actualizado correctamente'})
+        except con.Error as error:
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+        finally:
+            cursor.close()
+            con.close()

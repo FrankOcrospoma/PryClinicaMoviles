@@ -46,3 +46,25 @@ def listar_notificacion_paciente(paciente_id):
         else:
             return jsonify(resultadoPagoJSONObject), 204 
         
+
+@ws_notificacion.route('/notificacion/paciente', methods=['PUT'])
+def cambiar_estado_notifiacion():
+    if request.method == 'PUT':
+        notificacion_id = request.form['notificacion_id']        
+        leida = request.form['leida']
+
+        leida_valor = 0
+        if leida.upper() == 'LEÍDO':
+            leida_valor = 1
+
+        if not notificacion_id or not leida:
+            return jsonify({'status': False, 'message': 'ID de notificación no válido'}), 400
+
+        obj = Notificacion()
+
+        resultado = json.loads(obj.actualizar_notificacion_paciente(notificacion_id, leida_valor))
+
+        if resultado['status']:
+            return jsonify(resultado), 200
+        
+        return jsonify(resultado), 204
