@@ -133,6 +133,28 @@ class Notificacion:
             cursor.close()
             con.close()
 
+#Anyelo
+    def actualizar_estado_aea(self, notificacion_id, estado):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE notificacion SET leida = %s WHERE id = %s
+            """
+            cursor.execute(sql, (estado, notificacion_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+
 
     def actualizar_estado(self, notificacion_id, estado):
         con = db().open
