@@ -2,7 +2,7 @@ from bd import Conexion as db
 import json
 from datetime import date
 from util import CustomJsonEncoder
-import datetime
+from datetime import datetime
 
 class Usuario():
     def __init__(self, id=None, nombre_usuario=None, email=None, contrasena=None, estado=None, token=None, estado_token=None, nombre=None, ape_completo=None, fecha_nac=None, documento=None, tipo_documento_id=None, sexo=None, direccion=None, telefono=None, foto=None, rol_id=None):
@@ -304,7 +304,7 @@ class Usuario():
 
             con.autocommit = False
 
-            cursor.execute(sql, [data["paciente_id"], datetime.now(), data["mensaje"], data["leida"]])
+            cursor.execute(sql, [data["paciente_id"], data["mensaje"], datetime.now(), data["leida"]])
             con.commit()
 
             return json.dumps({'status': True, 'data': None, 'message': "Notificacion  agregado correctamente"})
