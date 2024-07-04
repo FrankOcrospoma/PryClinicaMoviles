@@ -120,8 +120,8 @@ class Notificacion:
         con = db().open
         cursor = con.cursor()
 
-        sql = "UPDATE notificacion SET leida = %s WHERE id = %s"
         try:
+            sql = """UPDATE notificacion SET leida = %s WHERE id = %s;"""
             cursor.execute(sql, (leida, notificacion_id))
             
             con.commit()

@@ -83,7 +83,7 @@ def cambiar_estado_notificacion():
         if resultado['status']:
             return jsonify(resultado), 200
         
-        return jsonify(resultado), 204
+        return jsonify(resultado), 500
     
 
 @ws_notificacion.route('/notificacion/actualizar_estado', methods=['POST'])
