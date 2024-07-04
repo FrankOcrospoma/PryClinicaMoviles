@@ -5,7 +5,7 @@ from util import CustomJsonEncoder
 from datetime import datetime
 
 class Usuario():
-    def __init__(self, id=None, nombre_usuario=None, email=None, contrasena=None, estado=None, token=None, estado_token=None, nombre=None, ape_completo=None, fecha_nac=None, documento=None, tipo_documento_id=None, sexo=None, direccion=None, telefono=None, foto=None, rol_id=None):
+    def __init__(self, id=None, nombre_usuario=None, email=None, contrasena=None, estado=None, token=None, estado_token=None, nombre=None, ape_completo=None, fecha_nac=None, documento=None, tipo_documento_id=None, sexo=None, direccion=None, telefono=None, foto=None, rol_id=None, notificacion=None):
         self.id = id
         self.nombre_usuario = nombre_usuario
         self.email = email
@@ -23,6 +23,7 @@ class Usuario():
         self.telefono = telefono
         self.foto = foto
         self.rol_id = rol_id
+        self.notificacion = notificacion
 
     def agregar(self):
         con = db().open
@@ -351,3 +352,24 @@ class Usuario():
         finally:
             cursor.close()
             con.close()
+
+    def actualizar_estado_notificacion_geancarlos(self, usuario_id, estado):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE usuario SET notificacion = %s WHERE id = %s
+            """
+            cursor.execute(sql, (estado, usuario_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
