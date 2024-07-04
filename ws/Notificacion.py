@@ -66,8 +66,8 @@ def listar_notificacion_paciente2(paciente_id):
 @ws_notificacion.route('/notificacion/paciente', methods=['PUT'])
 def cambiar_estado_notificacion():
     if request.method == 'PUT':
-        notificacion_id = request.form.get('notificacion_id')        
-        leida = request.form.get('leida')
+        notificacion_id = request.form['notificacion_id']        
+        leida = request.form['leida']
 
         leida_valor = 0
         if leida.upper() == 'LEÍDO':
