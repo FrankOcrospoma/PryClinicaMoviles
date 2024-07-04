@@ -90,6 +90,28 @@ def actualizar_usuario():
         else:
             return jsonify(resultado_actualizar), 500
 
+#Anyelo
+@ws_usuario.route('/usuario/actualizar_estado_aea', methods=['POST'])
+def actualizar_estado_notificacion_aea():
+    if request.method == 'POST':
+        usuario_id = request.form.get('usuario_id')
+        notificacion = request.form.get('notificacion')
+
+        if not usuario_id or notificacion is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        if notificacion not in ['0', '1']:
+            return jsonify({'status': False, 'message': 'Estado inválido, debe ser 0 (no leída) o 1 (leída)'}), 400
+
+        obj = Usuario()
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_aea(usuario_id, int(notificacion)))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
+
+
 @ws_usuario.route('/usuario/eliminar', methods=['DELETE'])
 @vt.validar
 def eliminar_usuario():

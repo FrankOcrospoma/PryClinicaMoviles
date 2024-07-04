@@ -78,6 +78,53 @@ class Usuario():
             con.close()
         return json.dumps({'status': True, 'data': {'usuario_id': self.id}, 'message': "Usuario actualizado correctamente"})
 
+
+#Anyelo
+    def actualizar_estado_aea(self, usuario_id, notificacion):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE usuario SET notificacion = %s WHERE id = %s
+            """
+            cursor.execute(sql, (notificacion, usuario_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+
+
+# #Anyelo
+#     def actualizar_estado_aea(self, notificacion_id, estado):
+#         con = db().open
+#         cursor = con.cursor()
+
+#         try:
+#             sql = """
+#             UPDATE notificacion SET leida = %s WHERE id = %s
+#             """
+#             cursor.execute(sql, (estado, notificacion_id))
+#             con.commit()
+
+#         except con.Error as error:  
+#             con.rollback()
+#             return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+#         finally:
+#             cursor.close()
+#             con.close()
+
+#         return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+
+
     def listar_usuarios_pacientes(self):
         con = db().open
         cursor = con.cursor()
