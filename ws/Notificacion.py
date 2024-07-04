@@ -4,6 +4,7 @@ from models.notificacion import Notificacion
 
 ws_notificacion = Blueprint('ws_notificacion', __name__)
 
+#
 @ws_notificacion.route('/notificacion/registrar', methods=['POST'])
 #@vt.validar
 def registrar_notificacion():
@@ -28,8 +29,7 @@ def registrar_notificacion():
         else:
             return jsonify(resultadoAgregarJSONObject), 500 
 
-
-
+#
 @ws_notificacion.route('/notificacion/paciente/<int:paciente_id>', methods=['GET'])
 #@vt.validar
 def listar_notificacion_paciente(paciente_id):
@@ -84,6 +84,27 @@ def cambiar_estado_notificacion():
             return jsonify(resultado), 200
         
         return jsonify(resultado), 204
+    
+#Anyelo
+@ws_notificacion.route('/notificacion/actualizar_estado_aea', methods=['POST'])
+def actualizar_estado_notificacion_aea():
+    if request.method == 'POST':
+        notificacion_id = request.form.get('notificacion_id')
+        estado = request.form.get('estado')
+
+        if not notificacion_id or estado is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        if estado not in ['0', '1']:
+            return jsonify({'status': False, 'message': 'Estado inválido, debe ser 0 (no leída) o 1 (leída)'}), 400
+
+        obj = Notificacion()
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_aea(notificacion_id, int(estado)))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
     
 
 @ws_notificacion.route('/notificacion/actualizar_estado', methods=['POST'])
