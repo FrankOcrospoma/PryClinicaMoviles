@@ -88,6 +88,7 @@ class Notificacion:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay notificaciones registradas'})
         
 
+    #xddd
     def actualizar_notificacion_paciente(self, notificacion_id, leida):
         con = db().open
         cursor = con.cursor()
@@ -105,3 +106,26 @@ class Notificacion:
         finally:
             cursor.close()
             con.close()
+
+
+    def actualizar_estado(self, notificacion_id, estado):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE notificacion SET leida = %s WHERE id = %s
+            """
+            cursor.execute(sql, (estado, notificacion_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+
