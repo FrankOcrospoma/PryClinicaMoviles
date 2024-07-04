@@ -46,3 +46,22 @@ def listar_notificacion_paciente(paciente_id):
         else:
             return jsonify(resultadoPagoJSONObject), 204 
         
+@ws_notificacion.route('/notificacion/actualizar_estado', methods=['POST'])
+#@vt.validar
+def actualizar_estado_notificacion():
+    if request.method == 'POST':
+        notificacion_id = request.form['notificacion_id']
+        estado = request.form['estado']
+
+        if not notificacion_id or estado is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        obj = Notificacion()
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado(notificacion_id, estado))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
+
+        
