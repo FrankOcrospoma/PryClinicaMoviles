@@ -69,7 +69,7 @@ def cambiar_estado_notifiacion():
         
         return jsonify(resultado), 204
     
-    
+
 @ws_notificacion.route('/notificacion/actualizar_estado', methods=['POST'])
 #@vt.validar
 def actualizar_estado_notificacion():
