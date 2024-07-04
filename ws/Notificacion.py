@@ -66,12 +66,12 @@ def listar_notificacion_paciente2(paciente_id):
 @ws_notificacion.route('/notificacion/paciente', methods=['PUT'])
 def cambiar_estado_notificacion():
     if request.method == 'PUT':
-        notificacion_id = request.form.get('notificacion_id')        
-        leida = request.form.get('leida')
+        notificacion_id = request.form['notificacion_id']        
+        leida = request.form['leida']
 
-        leida_valor = 0
+        leida_valor = 1
         if leida.upper() == 'LEÍDO':
-            leida_valor = 1
+            leida_valor = 0
 
         if not notificacion_id or not leida:
             return jsonify({'status': False, 'message': 'ID de notificación no válido'}), 400
@@ -83,7 +83,7 @@ def cambiar_estado_notificacion():
         if resultado['status']:
             return jsonify(resultado), 200
         
-        return jsonify(resultado), 204
+        return jsonify(resultado), 500
     
 #Anyelo
 @ws_notificacion.route('/notificacion/actualizar_estado_aea', methods=['POST'])
