@@ -3,7 +3,7 @@ import mysql.connector
 from flask import jsonify
 import json
 from bd import Conexion as db
-from datetime import date
+from datetime import date, datetime
 from util import CustomJsonEncoder
 
 class Notificacion:
@@ -80,8 +80,8 @@ class Notificacion:
         notificaciones_list = []
         for notificacion in notificaciones:
             notificacion_dict = dict(notificacion)
-            if isinstance(notificacion_dict.get('fecha'), date ):
-                notificacion_dict['fecha'] = notificacion_dict['fecha'].strftime('%Y-%m-%d')
+            if isinstance(notificacion_dict.get('fecha'), datetime ):
+                notificacion_dict['fecha'] = notificacion_dict['fecha'].strftime('%Y-%m-%d %H:%M:%S')
             notificaciones_list.append(notificacion_dict)
    
         if notificaciones_list:
