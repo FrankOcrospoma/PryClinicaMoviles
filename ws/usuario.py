@@ -425,7 +425,7 @@ def actualizar_estado_notificacion():
     
 @ws_usuario.route('/usuario/actualizar_estado_geancarlos', methods=['POST'])
 #@vt.validar
-def actualizar_estado_notificacion():
+def actualizar_estado_notificacion_geancarlos():
     if request.method == 'POST':
         usuario_id = request.form['usuario_id']
         estado = request.form['estado']
