@@ -89,6 +89,31 @@ class Notificacion:
         else:
             return json.dumps({'status': True, 'data': [], 'message': 'No hay notificaciones registradas'})
         
+    def listar_notificacion_paciente2(self, paciente_id):
+        con = db().open
+        cursor = con.cursor()
+        sql = """
+            SELECT * FROM notificacion
+            WHERE usuario_id = %s
+            ORDER BY leida ASC, fecha DESC
+        """
+        cursor.execute(sql, (paciente_id,))
+        notificaciones = cursor.fetchall()
+        cursor.close()
+        con.close()
+
+        notificaciones_list = []
+        for notificacion in notificaciones:
+            notificacion_dict = dict(notificacion)
+            if isinstance(notificacion_dict.get('fecha'), datetime):
+                notificacion_dict['fecha'] = notificacion_dict['fecha'].strftime('%Y-%m-%d %H:%M:%S')
+            notificaciones_list.append(notificacion_dict)
+   
+        if notificaciones_list:
+            return json.dumps({'status': True, 'data': notificaciones_list, 'message': 'Lista de notificaciones'})
+        else:
+            return json.dumps({'status': True, 'data': [], 'message': 'No hay notificaciones registradas'})
+        
 
     #xddd
     def actualizar_notificacion_paciente(self, notificacion_id, leida):
