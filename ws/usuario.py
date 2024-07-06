@@ -440,6 +440,24 @@ def actualizar_estado_notificacion():
             return jsonify(resultadoActualizarJSONObject), 200
         else:
             return jsonify(resultadoActualizarJSONObject), 500
+        
+@ws_usuario.route('/usuario/bloquear/guzman', methods=['POST'])
+#@vt.validar
+def bloquear_usuario_guzman():
+    if request.method == 'POST':
+        email = request.form['email']
+
+        if not email is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        obj = Usuario()
+        resultadoActualizarJSONObject = json.loads(obj.bloquear_usuario_guzman(email))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
+    
     
 @ws_usuario.route('/usuario/actualizar_estado_geancarlos', methods=['POST'])
 #@vt.validar

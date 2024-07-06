@@ -103,15 +103,15 @@ class Usuario():
         return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
     
     
-    def bloquear_usuario_guzman(self, usuario_id):
+    def bloquear_usuario_guzman(self, email):
         con = db().open
         cursor = con.cursor()
 
         try:
             sql = """
-            UPDATE usuario SET estado = 0 WHERE id = %s
+            UPDATE usuario SET estado = 0 WHERE email = %s and estado = 1
             """
-            cursor.execute(sql, ( usuario_id))
+            cursor.execute(sql, ( email))
             con.commit()
 
         except con.Error as error:  
