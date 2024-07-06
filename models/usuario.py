@@ -101,6 +101,30 @@ class Usuario():
             con.close()
 
         return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+    
+    
+    def bloquear_usuario_guzman(self, usuario_id):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE usuario SET estado = 0 WHERE id = %s
+            """
+            cursor.execute(sql, ( usuario_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Usuario bloqueado por limite de intentos'})
+
+
 
 
 # #Anyelo
@@ -347,7 +371,7 @@ class Usuario():
                 WHERE id = %s
             """
             cursor.execute(sql_paciente, (data["paciente_id"], ))
-            usario_estado_noti = cursor.fetchall()
+            usario_estado_noti = cursor.fetchone()
             
             numero = 0
             for usu in usario_estado_noti:
