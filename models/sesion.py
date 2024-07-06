@@ -35,9 +35,10 @@ class Sesion:
         if datos: # Validar si hay datos
             if datos['estado'] == 1: # Estado '1' = activo
                 if datos['contrasena'] == self.clave:
-
                     datos_serializables = self.convertir_a_serializable(datos)
                     return json.dumps({'status': True, 'data': datos_serializables, 'message': 'Credenciales correctas'})
+                else:
+                    return json.dumps({'status': False, 'data': None, 'message': "Credenciales incorrectas"})
             else:
                 return json.dumps({'status': False, 'data': datos['nombre_usuario'], 'message': "Cuenta inactiva"})
         else: 
