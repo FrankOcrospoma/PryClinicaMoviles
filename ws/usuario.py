@@ -133,7 +133,25 @@ def listar_usuarios():
         obj = Usuario()
         return jsonify(json.loads(obj.listar_usuarios())), 200
     
-    
+#Anyelo
+@ws_usuario.route('/usuario/actualizar_estado_bloqueado', methods=['POST'])
+#@vt.validar
+def actualizar_estado_bloqueado():
+    if request.method == 'POST':
+        usuario_id = request.form['usuario_id']
+        bloqueado = request.form['bloqueado']
+
+        if not usuario_id or bloqueado is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        obj = Usuario()
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_bloqueado(usuario_id, bloqueado))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
+
 @ws_usuario.route('/usuario/lista/pacientes', methods=['GET'])
 @vt.validar
 def listar_usuarios_pacientes():
@@ -422,6 +440,24 @@ def actualizar_estado_notificacion():
             return jsonify(resultadoActualizarJSONObject), 200
         else:
             return jsonify(resultadoActualizarJSONObject), 500
+        
+@ws_usuario.route('/usuario/bloquear/guzman', methods=['POST'])
+#@vt.validar
+def bloquear_usuario_guzman():
+    if request.method == 'POST':
+        email = request.form['email']
+
+        if not email is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        obj = Usuario()
+        resultadoActualizarJSONObject = json.loads(obj.bloquear_usuario_guzman(email))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
+    
     
 @ws_usuario.route('/usuario/actualizar_estado_geancarlos', methods=['POST'])
 #@vt.validar
