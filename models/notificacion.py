@@ -63,6 +63,58 @@ class Notificacion:
             
         return json.dumps({'status': True, 'data': {'notificacion_id': self.id}, 'message': 'Notificación registrada correctamente'})
 
+    def registrarPorEstado(self, cita_id):
+        # Abrir la conexión
+        con = db().open
+        
+        # Crear un cursor que devuelve la consulta sql
+        cursor = con.cursor()
+
+        # Obtener el paciente_id basado en la cita_id
+        cursor.execute("SELECT paciente_id FROM cita_atencion WHERE id = %s", (cita_id,))
+        paciente_id_result = cursor.fetchone()
+
+        if not paciente_id_result:
+            cursor.close()
+            con.close()
+            return json.dumps({'status': False, 'message': 'Cita no encontrada con id: {}'.format(cita_id)})
+
+        paciente_id = paciente_id_result['paciente_id']
+        
+        # Preparar la sentencia de inserción con verificación del estado de notificación
+        sql = """
+        INSERT INTO notificacion (usuario_id, mensaje, fecha, leida)
+        SELECT u.id, %s, %s, %s
+        FROM usuario u
+        WHERE u.id = %s AND u.notificacion = 1;
+        """
+        
+        try:
+            # Iniciar la operación, indicando que la transacción
+            # se confirma de manera manual
+            con.autocommit = False
+            
+            # Ejecutar la sentencia
+            cursor.execute(sql, [self.mensaje, datetime.now(), 0, paciente_id])
+            
+            # Confirmar la operación de agregar
+            con.commit()
+            
+            self.id = cursor.lastrowid
+
+        except con.Error as error:  
+            # Revocar la operación de agregar
+            con.rollback()
+            
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+        
+            return json.dumps({'status': True, 'data': {'notificacion_id': self.id}, 'message': 'Notificación registrada correctamente'})
+
+
 
     def listar_notificacion_paciente(self, paciente_id):
         con = db().open
