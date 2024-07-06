@@ -458,7 +458,7 @@ class Usuario():
             cursor.close()
             con.close()
 
-        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+        return json.dumps({'status': True, 'message': 'Estado de la bloqueado actualizado correctamente'})
 
 
     def actualizar_estado_notificacion(self, usuario_id, notificacion):
