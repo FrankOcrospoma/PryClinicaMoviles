@@ -462,7 +462,27 @@ class Usuario():
 
         return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
 
+#Anyelo
+    def actualizar_estado_bloqueado(self, usuario_id, bloqueado):
+        con = db().open
+        cursor = con.cursor()
 
+        try:
+            sql = """
+            UPDATE usuario SET bloqueado = %s WHERE id = %s
+            """
+            cursor.execute(sql, (bloqueado, usuario_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
 
 
     def actualizar_estado_notificacion(self, usuario_id, notificacion):
