@@ -35,9 +35,6 @@ class Sesion:
         # Retornar el resultado del método
         if datos: # Validar si hay datos
             if datos['estado'] == 1: # Estado '1' = activo
-                if datos['bloqueado'] >= 3:
-                    return json.dumps({'status': False, 'data': None, 'message': "Cuenta bloqueada"})
-
                 if datos['contrasena'] == self.clave:
                     # Resetear intentos fallidos
                     self.resetearIntentosFallidos(datos['id'])
