@@ -6,7 +6,8 @@ class Sesion:
     def __init__(self, email=None, clave=None):
         self.email = email
         self.clave = clave
-
+    
+    #Anyelo
     def iniciarSesion(self):
         # Abrir la conexion
         con = db().open
@@ -19,11 +20,10 @@ class Sesion:
             SELECT * 
             FROM usuario
             WHERE email = %s
-            AND contrasena = %s
         """    
         
         # Ejecutar la consulta sql 
-        cursor.execute(sql, [self.email, self.clave])
+        cursor.execute(sql, [self.email])
         
         # Almacenar el resultado de la consulta
         datos = cursor.fetchone()
@@ -34,15 +34,58 @@ class Sesion:
         
         # Retornar el resultado del método
         if datos: # Validar si hay datos
-            print(datos)
             if datos['estado'] == 1: # Estado '1' = activo
-                # Convertir datos a un formato serializable
-                datos_serializables = self.convertir_a_serializable(datos)
-                return json.dumps({'status': True, 'data': datos_serializables, 'message': 'Credenciales correctas'})
+                if datos['bloqueado'] >= 3:
+                    return json.dumps({'status': False, 'data': None, 'message': "Cuenta bloqueada"})
+
+                if datos['contrasena'] == self.clave:
+                    # Resetear intentos fallidos
+                    self.resetearIntentosFallidos(datos['id'])
+                    datos_serializables = self.convertir_a_serializable(datos)
+                    return json.dumps({'status': True, 'data': datos_serializables, 'message': 'Credenciales correctas'})
+                else:
+                    # Incrementar intentos fallidos
+                    self.incrementarIntentosFallidos(datos['id'])
+                    return json.dumps({'status': False, 'data': None, 'message': "Credenciales incorrectas"})
             else:
                 return json.dumps({'status': False, 'data': datos['nombre_usuario'], 'message': "Cuenta inactiva"})
-        else: # Si no hay datos: Credenciales son incorrectas, el usuario no existe
+        else: 
             return json.dumps({'status': False, 'data': None, 'message': "Credenciales incorrectas"})
+
+    #Anyelo
+    def incrementarIntentosFallidos(self, user_id):
+        con = db().open
+        cursor = con.cursor()
+        
+        sql = """
+            UPDATE usuario
+            SET bloqueado = bloqueado + 1
+            WHERE id = %s
+        """
+        
+        cursor.execute(sql, [user_id])
+        con.commit()
+        cursor.close()
+        con.close()
+
+    #Anyelo
+    def resetearIntentosFallidos(self, usuario_id):
+        con = db().open
+        cursor = con.cursor()
+        
+        sql = """
+            UPDATE usuario
+            SET bloqueado = 0
+            WHERE id = %s
+        """
+        
+        cursor.execute(sql, [usuario_id])
+        con.commit()
+        cursor.close()
+        con.close()
+
+
+
     def iniciarSesionAdmin(self):
         # Abrir la conexion
         con = db().open
