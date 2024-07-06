@@ -294,3 +294,50 @@ class Notificacion:
                 
             return json.dumps({'status': True, 'data': {'notificacion_id': self.id}, 'message': 'Notificación registrada correctamente'})
 
+
+    
+    #Anyelo
+    def registrarPorEstadoMejora(self):
+        con = db().open
+        
+        cursor = con.cursor()
+
+        cursor.execute("SELECT notificacion FROM usuario WHERE id = %s", (self.usuario_id,))
+        notificacionResultado = cursor.fetchone()
+
+        estadoNotificacion = notificacionResultado['notificacion']
+        
+        sql = """
+        INSERT INTO notificacion (
+            usuario_id,
+            mensaje,
+            fecha,
+            leida
+        ) VALUES (%s, %s, %s, %s);
+        """
+        
+        try:
+            # Iniciar la operación, indicando que la transacción
+            # se confirma de manera manual
+            con.autocommit = False
+            
+            if estadoNotificacion == 1:
+
+                cursor.execute(sql, [self.usuario_id, self.mensaje, datetime.now(), 0])
+                
+                self.id = cursor.lastrowid
+                con.commit()
+                return json.dumps({'status': True, 'data': {'notificacion_id': self.id}, 'message': 'Notificación registrada correctamente'})
+            
+            return json.dumps({'status': True, 'data': None, 'message': 'Notificación no registrada por inhabilitación de notificación'})
+        except con.Error as error:  
+            # Revocar la operación de agregar
+            con.rollback()
+            
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+        
+            
