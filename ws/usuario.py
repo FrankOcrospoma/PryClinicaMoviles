@@ -447,7 +447,7 @@ def bloquear_usuario_guzman():
     if request.method == 'POST':
         email = request.form['email']
 
-        if not email is None:
+        if email is None:
             return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
 
         obj = Usuario()
