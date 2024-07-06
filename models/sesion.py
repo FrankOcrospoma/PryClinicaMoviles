@@ -32,6 +32,7 @@ class Sesion:
         cursor.close()
         con.close()
         
+        # Retornar el resultado del método
         if datos: # Validar si hay datos
             if datos['estado'] == 1: # Estado '1' = activo
                 if datos['contrasena'] == self.clave:
@@ -44,37 +45,6 @@ class Sesion:
         else: 
             return json.dumps({'status': False, 'data': None, 'message': "Credenciales incorrectas"})
 
-    #Anyelo
-    def incrementarIntentosFallidos(self, user_id):
-        con = db().open
-        cursor = con.cursor()
-        
-        sql = """
-            UPDATE usuario
-            SET bloqueado = bloqueado + 1
-            WHERE id = %s
-        """
-        
-        cursor.execute(sql, [user_id])
-        con.commit()
-        cursor.close()
-        con.close()
-
-    #Anyelo
-    def resetearIntentosFallidos(self, usuario_id):
-        con = db().open
-        cursor = con.cursor()
-        
-        sql = """
-            UPDATE usuario
-            SET bloqueado = 0
-            WHERE id = %s
-        """
-        
-        cursor.execute(sql, [usuario_id])
-        con.commit()
-        cursor.close()
-        con.close()
 
 
 
