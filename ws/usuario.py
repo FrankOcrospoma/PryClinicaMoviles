@@ -404,9 +404,28 @@ def notificaciones_paciente(paciente_id):
         obj = Usuario()
         return jsonify(json.loads(obj.lista_notificaciones_paciente(paciente_id))), 200
     
-@ws_usuario.route('/usuario/actualizar_estado_geancarlos', methods=['POST'])
+    
+@ws_usuario.route('/usuario/actualizar/notificacion/frank', methods=['POST'])
 #@vt.validar
 def actualizar_estado_notificacion():
+    if request.method == 'POST':
+        usuario_id = request.form['usuario_id']
+        notificacion = request.form['notificacion']
+
+        if not usuario_id or notificacion is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        obj = Usuario()
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_notificacion(usuario_id, notificacion))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
+    
+@ws_usuario.route('/usuario/actualizar_estado_geancarlos', methods=['POST'])
+#@vt.validar
+def actualizar_estado_notificacion_geancarlos():
     if request.method == 'POST':
         usuario_id = request.form['usuario_id']
         estado = request.form['estado']
@@ -415,7 +434,47 @@ def actualizar_estado_notificacion():
             return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
 
         obj = Usuario()
-        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_notificacion(usuario_id, estado))
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_notificacion_geancarlos(usuario_id, estado))
+
+        if resultadoActualizarJSONObject['status']:
+            return jsonify(resultadoActualizarJSONObject), 200
+        else:
+            return jsonify(resultadoActualizarJSONObject), 500
+        
+
+
+#edu
+@ws_usuario.route('/notificacion/paciente/estado', methods=['PUT'])
+def cambiar_estado_notificacion_por_paciente():
+    if request.method == 'PUT':
+        paciente_id = request.form['paciente_id']        
+        notificacion = request.form['notificacion']
+
+
+        obj = Usuario()
+
+        resultado = json.loads(obj.cambiar_estado_notificacion_por_paciente(paciente_id, notificacion))
+
+        if resultado['status']:
+            return jsonify(resultado), 200
+        
+        return jsonify(resultado), 500
+    
+
+
+#Gustavo
+    @ws_usuario.route('/usuario/actualizar_estado_noti_guzman', methods=['POST'])
+#@vt.validar
+    def actualizar_estado_noti_guzman():
+        if request.method == 'POST':
+            usuario_id = request.form['usuario_id']
+            estado = request.form['estado']
+
+        if not usuario_id or estado is None:
+            return jsonify({'status': False, 'message': 'Faltan parámetros'}), 400
+
+        obj = Usuario()
+        resultadoActualizarJSONObject = json.loads(obj.actualizar_estado_noti_guzman(usuario_id, estado))
 
         if resultadoActualizarJSONObject['status']:
             return jsonify(resultadoActualizarJSONObject), 200

@@ -341,21 +341,38 @@ class Usuario():
         con = db().open
         cursor = con.cursor()
         try:
-
-            sql = """
-            INSERT INTO notificacion (
-                usuario_id, mensaje, fecha, leida
-            ) VALUES (
-                %s, %s, %s, %s
-            )
+            
+            sql_paciente = """
+                SELECT notificacion FROM usuario
+                WHERE id = %s
             """
+            cursor.execute(sql_paciente, (data["paciente_id"], ))
+            usario_estado_noti = cursor.fetchall()
+            
+            numero = 0
+            for usu in usario_estado_noti:
+                print (usu.get('notificacion'))
+                numero = usu.get('notificacion')
+            if numero == 1:
+            
 
-            con.autocommit = False
+                sql = """
+                INSERT INTO notificacion (
+                    usuario_id, mensaje, fecha, leida
+                ) VALUES (
+                    %s, %s, %s, %s
+                )
+                """
 
-            cursor.execute(sql, [data["paciente_id"], data["mensaje"], datetime.now(), data["leida"]])
-            con.commit()
+                con.autocommit = False
 
-            return json.dumps({'status': True, 'data': None, 'message': "Notificacion  agregado correctamente"})
+                cursor.execute(sql, [data["paciente_id"], data["mensaje"], datetime.now(), data["leida"]])
+                con.commit()
+
+                return json.dumps({'status': True, 'data': None, 'message': "Notificacion  agregado correctamente"})
+            else:
+                return json.dumps({'status': True, 'data': None, 'message': "El usuario no desea recibir notificaciones",  })
+                
         except Exception as error:
             con.rollback()
             return json.dumps({'status': False, 'data': None, 'message': f"Error: {str(error)}"})
@@ -379,7 +396,7 @@ class Usuario():
                 END AS estado
             FROM notificacion n
             INNER JOIN usuario u ON u.id=n.usuario_id
-            WHERE u.id = %s
+            WHERE u.id = %s AND u.notificacion = 1
             """
             cursor.execute(sql, [paciente_id])
 
@@ -420,3 +437,76 @@ class Usuario():
             con.close()
 
         return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+
+
+
+
+    def actualizar_estado_notificacion(self, usuario_id, notificacion):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE usuario SET notificacion = %s WHERE id = %s
+            """
+            cursor.execute(sql, (notificacion, usuario_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación del usuario actualizado correctamente'})
+
+
+    def cambiar_estado_notificacion_por_paciente(self, paciente_id, notificacion):
+        con = db().open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE usuario SET notificacion=%s WHERE id = %s;
+                        """
+            cursor.execute(sql, (notificacion, paciente_id))
+            
+            con.commit()
+            return json.dumps({'status': True, 'data': {'paciente_id': paciente_id}, 'message': 'Notificación actualizado correctamente'})
+        except con.Error as error:
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+        finally:
+            cursor.close()
+            con.close()
+
+
+
+    def actualizar_estado_noti_guzman(self, usuario_id, estado):
+        con = db.open
+        cursor = con.cursor()
+
+        try:
+            sql = """
+            UPDATE usuario SET notificacion = %s WHERE id = %s
+            """
+            cursor.execute(sql, (estado, usuario_id))
+            con.commit()
+
+        except con.Error as error:  
+            con.rollback()
+            return json.dumps({'status': False, 'data': None, 'message': str(error)})
+
+        finally:
+            cursor.close()
+            con.close()
+
+        return json.dumps({'status': True, 'message': 'Estado de la notificación actualizado correctamente'})
+
+
+
+
+
+
